@@ -1,4 +1,4 @@
-# apps
+# SlipStream/apps
 Application recipes for SlipStream
 
 ## Update the content of this repository from Nuvla&trade;
