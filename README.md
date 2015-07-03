@@ -1,5 +1,5 @@
 # SlipStream/apps
-Application recipes for SlipStream
+Application recipes for SlipStream.
 
 ## License
 All SlipStream modules of this repository are licensed under the *Apache License v2.0*.
@@ -18,6 +18,7 @@ ss-module-download -u <username> -p <password> \
   --reset-commit-message apps
 popd
 ```
+
 `<username>` and `<password>` should be valid credentials for the Nuvla&trade; service.
 
 ## Push these apps to your SlipStream instance
@@ -32,10 +33,14 @@ pushd $tmpdir
 wget -O apps.zip https://github.com/slipstream/apps/archive/master.zip
 unzip -o apps.zip
 rm -f apps.zip
-ss-module-upload -u <username> -p <password> --endpoint=https://<SlipStream IP/HOSTNAME> $(find . -name '*.xml')
+ss-module-upload -u <username> -p <password> \
+  --endpoint=https://<SlipStream IP/HOSTNAME> \
+  $(find . -name '*.xml')
 popd
 
 rm -Rf $tmpdir
 ```
+
 `<username>` and `<password>` should be valid credentials for the Nuvla&trade; service.
+
 `<SlipStream IP/HOSTNAME>` should correspond to the IP address (or the hostname) of your SlipStream instance.
