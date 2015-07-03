@@ -1,0 +1,283 @@
+<imageModule category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:45.729 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="1716">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets>
+      <target name="execute">#!/bin/bash -x
+
+
+#disactive le firewall
+service iptables stop
+
+
+#install wget
+yum -y install wget
+
+
+#to fix this error : 
+#The following hosts have Transparent Huge Pages (THP) enabled. THP should be disabled to avoid potential Hadoop performance issues.
+echo never &gt; /sys/kernel/mm/redhat_transparent_hugepage/enabled 
+echo never &gt; /sys/kernel/mm/redhat_transparent_hugepage/defrag
+
+
+#clean all
+yum -y clean all
+
+
+#get dns_domain from ambari server
+dns_domain=`ss-get --timeout 480 hadoop_installer.1:dns_domain`
+
+
+#Set &amp; Send Hostname (DNS) to hadoop ambari server
+slave_id=`ss-get --timeout 480 id`
+hostname="slave${slave_id}.${dns_domain}"
+ss-set node_hostname "$hostname"
+
+
+#set hostname
+hostname $hostname
+
+#Get ip salve node
+ip_salve=`ss-get --timeout 480 hostname`
+
+truncate -s 0 /etc/hosts
+cat &lt;&lt; EOF &gt;&gt; /etc/hosts
+$ip_salve  $hostname
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+EOF
+
+
+ # var=$(hostname) 
+truncate -s 0 /etc/sysconfig/network
+cat &lt;&lt; EOF &gt;&gt; /etc/sysconfig/network
+NETWORK=yes
+NETWORK_IPV6=no
+HOSTNAME=$hostname
+EOF
+
+
+
+ip_hadoop_installer=`ss-get --timeout 480 hadoop_installer.1:hostname`
+
+sed -i "1i nameserver $ip_hadoop_installer" /etc/resolv.conf
+
+#echo "nameserver $ip_ambari_server" &gt; /etc/resolv.conf
+#cat &lt;&lt; EOF &gt;&gt; /etc/resolv.conf
+#nameserver $ip_ambari_server
+#EOF
+
+
+
+chkconfig iptables off
+chkconfig ip6tables off
+
+
+
+
+#set the state machine
+ss-set node_state "ambari_agent_not_ready"
+
+
+
+
+truncate -s 0 /etc/sysconfig/selinux
+cat &lt;&lt; EOF &gt;&gt; /etc/sysconfig/selinux
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#       enforcing - SELinux security policy is enforced.
+#       permissive - SELinux prints warnings instead of enforcing.
+#       disabled - SELinux is fully disabled.
+SELINUX=disabled
+# SELINUXTYPE= type of policy in use. Possible values are:
+#       targeted - Only targeted network daemons are protected.
+#       strict - Full SELinux protection.
+SELINUXTYPE=targeted
+EOF
+
+
+
+# Generate keys for slave 
+ssh-keygen -f /root/.ssh/id_rsa -N ""
+
+
+# configuration for ssh access between hadoop_master and slaves
+ss-set slave_id_rsa64 `cat chmod 604 /root/.ssh/id_rsa.pub | base64 --wrap 0`
+
+
+
+#Configuration for ssh access between ambari_server and hadoop_nodes(master&amp;slaves) (receive ambari_server_public_key to copy in authorized_keys)
+hadoop_installer_public_key=`ss-get --timeout 480 hadoop_installer.1:hadoop_installer_id_rsa64 | base64 -d`
+cat &lt;&lt; EOF &gt;&gt; /root/.ssh/authorized_keys
+$hadoop_installer_public_key
+EOF
+#hadoop_installer Keyscan
+hadoop_installer_ip_hostname=`ss-get --timeout 480 hadoop_installer.1:hostname`
+hadoop_installer_node_hostname=`ss-get --timeout 480 hadoop_installer.1:hadoop_installer_hostname`
+ssh-keyscan $hadoop_installer_ip_hostname &gt;&gt; /root/.ssh/known_hosts
+ssh-keyscan $hadoop_installer_node_hostname  &gt;&gt; /root/.ssh/known_hosts
+
+
+
+
+#Configuration for ssh access between hadoop_master et hadoop_slaves
+for (( i=1; i &lt;= `ss-get master:multiplicity`; i++ )); do
+
+hadoop_master_public_key=`ss-get --timeout 480 master.$i:master_id_rsa64 | base64 -d`
+cat &lt;&lt; EOF &gt;&gt; /root/.ssh/authorized_keys
+$hadoop_master_public_key
+EOF
+
+#Master Keyscan 
+ip_hostname=`ss-get --timeout 480 master.$i:hostname`
+node_hostname=`ss-get --timeout 480 master.$i:node_hostname`
+ssh-keyscan $ip_hostname &gt;&gt; /root/.ssh/known_hosts
+ssh-keyscan $node_hostname  &gt;&gt; /root/.ssh/known_hosts
+
+done
+
+
+
+
+
+#********************************** Blue print modif *******************************************
+
+#Download the Ambari repository on the Ambari Server host
+cd /etc/yum.repos.d/
+wget http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
+
+
+#Install Ambari Agent from the public Ambari repository
+yum -y install ambari-agent
+
+#recieve Ambari server_hostname (DNS) 
+hadoop_installer_hostname=`ss-get --timeout 480 hadoop_installer.1:hadoop_installer_hostname`
+
+#Set the Ambari Server on the Ambari Agent.
+truncate -s 0 /etc/ambari-agent/conf/ambari-agent.ini
+cat &lt;&lt; EOF &gt;&gt; /etc/ambari-agent/conf/ambari-agent.ini
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific
+
+[server]
+hostname=$hadoop_installer_hostname
+url_port=8440
+secured_url_port=8441
+
+[agent]
+prefix=/var/lib/ambari-agent/data
+tmp_dir=/var/lib/ambari-agent/data/tmp
+;loglevel=(DEBUG/INFO)
+loglevel=INFO
+data_cleanup_interval=86400
+data_cleanup_max_age=2592000
+data_cleanup_max_size_MB = 100
+ping_port=8670
+cache_dir=/var/lib/ambari-agent/cache
+tolerate_download_failures=true
+run_as_user=root
+
+[command]
+maxretries=2
+sleepBetweenRetries=1
+
+[security]
+keysdir=/var/lib/ambari-agent/keys
+server_crt=ca.crt
+passphrase_env_var_name=AMBARI_PASSPHRASE
+
+[services]
+pidLookupPath=/var/run/
+
+[heartbeat]
+state_interval=6
+dirs=/etc/hadoop,/etc/hadoop/conf,/etc/hbase,/etc/hcatalog,/etc/hive,/etc/oozie,
+  /etc/sqoop,/etc/ganglia,
+  /var/run/hadoop,/var/run/zookeeper,/var/run/hbase,/var/run/templeton,/var/run/oozie,
+  /var/log/hadoop,/var/log/zookeeper,/var/log/hbase,/var/run/templeton,/var/log/hive
+; 0 - unlimited
+log_lines_count=300
+EOF
+
+
+#Start the Agent to initiate registration to server
+ambari-agent start
+
+
+#***********************************************************************************************
+
+#set the state machine
+ss-set node_state "ambari_agent_ready"
+
+# set the deployment SSH url
+hostname=`ss-get hostname`
+url_ssh="ssh://root@${hostname}"
+ss-set url.ssh "${url_ssh}"
+
+# set the customstate to inform user that everything's ready
+ss-set statecustom 'Hadoop install ...'</target>
+      <target name="onvmadd" />
+      <target name="report" />
+      <target name="onvmremove" />
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe />
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>slave_id_rsa64</string>
+         <parameter category="Output" description="base64 encoded ssh public key for hadoop slave" isSet="false" mandatory="false" name="slave_id_rsa64" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>node_state</string>
+         <parameter category="Output" description="node state" isSet="false" mandatory="false" name="node_state" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>node_hostname</string>
+         <parameter category="Output" description="Node Hostname (DNS)" isSet="false" mandatory="false" name="node_hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

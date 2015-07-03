@@ -1,0 +1,35 @@
+<projectModule category="Project" creation="2015-07-01 13:51:57.711 UTC" deleted="false" description="Recipes to deploy an Hadoop cluster with Ambari" isLatestVersion="true" lastModified="2015-07-01 13:51:57.712 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" parentUri="module/apps" shortName="Hadoop" version="1704">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <children>
+      <item category="Image" description="Ambari server used to install and manage the Hadoop cluster" name="ambari" version="1714">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Deployment" description="Deployment of an Hadoop cluster" name="hadoop-deployment" version="1717">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Image" description="Hadoop master node" name="master" version="1715">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Image" description="Hadoop slave node" name="slave" version="1716">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+   </children>
+   <parameters />
+</projectModule>

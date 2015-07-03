@@ -1,0 +1,966 @@
+<imageModule category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:32:47.749 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="1714">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets>
+      <target name="execute">#!/bin/sh -x
+
+
+#disactive le firewall
+service iptables stop
+
+#-----------------------------------------Ambari server install--------------------------------------------------
+
+
+ss-set statecustom 'Ambari server install...'
+
+
+#install wget
+yum -y install wget
+
+
+#Download the Ambari repository on the Ambari Server host
+cd /etc/yum.repos.d/
+wget http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
+
+#clean all
+yum -y clean all
+
+#Install Ambari Server from the public Ambari repository
+yum -y install ambari-server
+
+
+#Run the setup command to configure your Ambari Server, Database, JDK, LDAP ... (-s to accept default value)
+ambari-server setup -s
+
+
+#ss-set statecustom 'Ambari server start...'
+##Start Ambari Server
+#ambari-server start
+
+
+#-----------------------------------------------------------------------------------------------------------------
+
+
+
+#set Dns domain
+dns_domain="hadoop.slipstream"
+ss-set dns_domain "$dns_domain"
+
+
+
+
+
+#-------------------------------- DNSmasq server install+ Config  -------------------------------------------------
+
+ss-set statecustom "DNS Server install "
+
+#install dnsmasq
+yum -y install dnsmasq
+
+
+
+
+truncate -s 0 /etc/dnsmasq.conf
+cat &lt;&lt; EOF &gt;&gt; /etc/dnsmasq.conf
+#
+# /etc/dnsmasq.conf (0644): server dnsmasq configuration
+#
+
+# Configuration file for dnsmasq.
+#
+# Format is one option per line, legal options are the same
+# as the long options legal on the command line. See
+# "/usr/sbin/dnsmasq --help" or "man 8 dnsmasq" for details.
+
+# The following two options make you a better netizen, since they
+# tell dnsmasq to filter out queries which the public DNS cannot
+# answer, and which load the servers (especially the root servers)
+# uneccessarily. If you have a dial-on-demand link they also stop
+# these requests from bringing up the link uneccessarily.
+
+# Never forward plain names (without a dot or domain part)
+domain-needed
+# Never forward addresses in the non-routed address spaces.
+bogus-priv
+
+
+
+# If you don't want dnsmasq to poll /etc/resolv.conf or other resolv
+# files for changes and re-read them then uncomment this.
+no-poll
+
+
+
+# If you want dnsmasq to listen for DHCP and DNS requests only on
+# specified interfaces (and the loopback) give the name of the
+# interface (eg eth0) here.
+# Repeat the line for more than one interface.
+interface=eth0
+
+
+# If you don't want dnsmasq to read /etc/hosts, uncomment the
+# following line.
+#no-hosts
+
+
+# Set this (and domain: see below) if you want to have a domain
+# automatically added to simple names in a hosts-file.
+expand-hosts
+
+# Set the domain for dnsmasq. this is optional, but if it is set, it
+# does the following things.
+# 1) Allows DHCP hosts to have fully qualified domain names, as long
+#     as the domain part matches this setting.
+# 2) Sets the "domain" DHCP option thereby potentially setting the
+#    domain of all systems configured by DHCP
+# 3) Provides the domain part for "expand-hosts"
+domain=$dns_domain
+EOF
+
+
+service dnsmasq start
+
+#-------------------------  Configuration du reseau + dns ----------------------------------------------
+
+for (( i=1; i &lt;= `ss-get master:multiplicity`; i++ )); do
+ip_master=`ss-get --timeout 480 master.$i:hostname`
+name_master=`ss-get --timeout 480 master.$i:node_hostname`
+cat &lt;&lt; EOF &gt;&gt; /etc/hosts
+$ip_master $name_master
+EOF
+done
+
+for (( i=1; i &lt;= `ss-get slave:multiplicity`; i++ )); do
+ip_slave=`ss-get --timeout 480 slave.$i:hostname`
+name_slave=`ss-get --timeout 480 slave.$i:node_hostname`
+cat &lt;&lt; EOF &gt;&gt; /etc/hosts
+$ip_slave $name_slave
+EOF
+done
+
+#set hostname
+hostname="installer.${dns_domain}"
+hostname $hostname
+
+
+# Generate keys for user
+ssh-keygen -f /root/.ssh/id_rsa -N ""
+
+
+# configuration for ssh access between master and slave (send master_public_key to slaves)
+ss-set hadoop_installer_id_rsa64 `cat chmod 604 /root/.ssh/id_rsa.pub | base64 --wrap 0`
+
+
+#Send hadoop_installer_Hostname (DNS) to Ambari_Agents
+ss-set hadoop_installer_hostname "$hostname"
+
+
+ip_hadoop_installer=`ss-get --timeout 480 hostname`
+cat &lt;&lt; EOF &gt;&gt; /etc/hosts
+$ip_hadoop_installer $hostname
+EOF
+
+
+
+
+sed -i "1i nameserver $ip_hadoop_installer" /etc/resolv.conf
+
+#echo 'nameserver 127.0.0.1' &gt; /etc/resolv.conf
+#cat &lt;&lt; EOF &gt;&gt; /etc/resolv.conf
+#nameserver 127.0.0.1
+#EOF
+
+
+
+truncate -s 0 /etc/sysconfig/network
+cat &lt;&lt; EOF &gt;&gt; /etc/sysconfig/network
+NETWORK=yes
+NETWORK_IPV6=no
+HOSTNAME=$hostname
+EOF
+
+chkconfig iptables off
+chkconfig ip6tables off
+chkconfig ntpd on
+
+
+truncate -s 0 /etc/sysconfig/selinux
+cat &lt;&lt; EOF &gt;&gt; /etc/sysconfig/selinux
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#       enforcing - SELinux security policy is enforced.
+#       permissive - SELinux prints warnings instead of enforcing.
+#       disabled - SELinux is fully disabled.
+SELINUX=disabled
+# SELINUXTYPE= type of policy in use. Possible values are:
+#       targeted - Only targeted network daemons are protected.
+#       strict - Full SELinux protection.
+SELINUXTYPE=targeted
+EOF
+
+
+
+
+
+#restrart dnsmsq (apres les modifications)
+ss-set statecustom 'DNS server restart'
+service dnsmasq restart
+
+#restrart ambari server (apres les modifications)
+ss-set statecustom 'Ambari server start...'
+#Start Ambari Server
+ambari-server start
+
+#------------------------------  Configuration  entre ambari server et les nodes  ----------------------------------
+
+
+
+#recieve all ambari_server_hostname (DNS) of nodes &amp; master and copy it on slaves.txt and master.txt
+touch /root/master.txt
+touch /root/slaves.txt
+
+
+#Configuration for ssh access between hadoop_slaves et hadoop_installer(ambari server)
+for (( i=1; i &lt;= `ss-get slave:multiplicity`; i++ )); do
+
+hadoop_salve_public_key=`ss-get --timeout 480 slave.$i:slave_id_rsa64 | base64 -d`
+cat &lt;&lt; EOF &gt;&gt; /root/.ssh/authorized_keys
+$hadoop_salve_public_key
+EOF
+
+ip_hostname=`ss-get --timeout 480 slave.$i:hostname`
+node_hostname=`ss-get --timeout 480 slave.$i:node_hostname`
+  
+ssh-keyscan $ip_hostname &gt;&gt; /root/.ssh/known_hosts
+ssh-keyscan $node_hostname  &gt;&gt; /root/.ssh/known_hosts
+
+# Juste pour garder les noms dans fichier txt 
+echo $node_hostname &gt;&gt; /root/slaves.txt
+
+done
+
+
+
+#Configuration for ssh access between hadoop_master et hadoop_installer(ambari server)
+for (( i=1; i &lt;= `ss-get master:multiplicity`; i++ )); do
+hadoop_master_public_key=`ss-get --timeout 480 master.$i:master_id_rsa64 | base64 -d`
+cat &lt;&lt; EOF &gt;&gt; /root/.ssh/authorized_keys
+$hadoop_master_public_key
+EOF
+
+
+ip_hostname=`ss-get --timeout 480 master.$i:hostname`
+node_hostname=`ss-get --timeout 480 master.$i:node_hostname`
+  
+ssh-keyscan $ip_hostname &gt;&gt; /root/.ssh/known_hosts
+ssh-keyscan $node_hostname  &gt;&gt; /root/.ssh/known_hosts
+  
+
+# Juste pour garder les noms dans fichier txt 
+echo $node_hostname &gt;&gt; /root/master.txt
+
+done
+
+
+
+
+#---------------------------------------------- Get  Master &amp; Slaves ------------------------------------------------------
+
+
+#get master hostname
+master_hostname=`ss-get --timeout 480 master.1:node_hostname`
+
+
+#extend the Hadoop example to allow the number of slaves to be changed
+slaves_number=`ss-get slave:multiplicity`
+slaves_list=""
+
+for (( i=1; i &lt;= "$slaves_number" ; i++ )); do  
+    
+    node_hostname=`ss-get --timeout 480 slave.$i:node_hostname`
+    slaves_list="${slaves_list} { \"fqdn\" : \"$node_hostname\" }"
+    
+    if [ "$slaves_number" !=  "$i" ]; then
+       slaves_list="${slaves_list}, "
+    fi
+    
+done
+echo $slaves_list 
+
+
+    
+#---------------------------------------------  Begin of Blueprint steps -------------------------------------------------
+
+ss-set statecustom 'Blueprint creation...'
+
+cd /root
+touch /root/ambari_blueprint.json
+touch /root/ambari_blueprint_config.json
+
+cat &lt;&lt; EOF &gt;&gt; ambari_blueprint.json
+{
+  "host_groups" : [
+    {
+      "name" : "master",
+      "configurations" : [],
+      "components" : [
+        {
+          "name" : "NAMENODE"
+        },
+        {
+          "name" : "SECONDARY_NAMENODE"
+        },       
+        {
+          "name" : "RESOURCEMANAGER"
+        },
+        {
+          "name" : "HISTORYSERVER"
+        },
+        {
+          "name" : "APP_TIMELINE_SERVER"
+        },
+        {
+          "name" : "GANGLIA_SERVER"
+        },
+        {
+          "name" : "GANGLIA_MONITOR"
+        },
+        {
+          "name" : "ZOOKEEPER_SERVER"
+        }
+      ],
+      "cardinality" : "1"
+    },
+    {
+      "name" : "slaves",
+      "components" : [
+        {
+          "name" : "DATANODE"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "NODEMANAGER"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        }
+      ],
+      "cardinality" : "1+"
+    }
+  ],
+  "Blueprints" : {
+    "stack_name" : "HDP",
+    "stack_version" : "2.2"
+  }
+}
+EOF
+
+
+ss-set statecustom 'Register blueprint with Ambari Server'
+sleep 10
+curl -H "X-Requested-By: ambari" -X POST -u admin:admin http://localhost:8080/api/v1/blueprints/multi-node-hdfs-yarn?validate_topology=false -d @ambari_blueprint.json
+
+
+ss-set statecustom 'Blueprint : Create Cluster Creation Template...'
+cat &lt;&lt; EOF &gt;&gt; ambari_blueprint_config.json
+{
+  "blueprint" : "multi-node-hdfs-yarn",
+  "default_password" : "admin",
+  "host_groups" :[
+    {
+      "name" : "master", 
+      "hosts" : [         
+        {
+          "fqdn" : "${master_hostname}"
+        }
+      ]
+    },
+    {
+      "name" : "slaves", 
+      "hosts" : [
+       ${slaves_list}
+      ]
+    }
+  ]
+}
+EOF
+
+
+#Recupere cluster name from input parametres
+cluster_name=`ss-get HDP_Cluster_Name`
+
+ss-set statecustom 'Blueprint: Create Cluster...'
+sleep 10
+curl -H "X-Requested-By: ambari" -X POST -u admin:admin http://localhost:8080/api/v1/clusters/$cluster_name -d @ambari_blueprint_config.json
+
+
+
+#----------------------------------------------  Hadoop install started --------------------------------------------------------------
+
+
+
+ss-set statecustom 'Hadoop install...'
+
+
+install_state=""
+install_progress="0"
+
+while [ "$install_state" != 'COMPLETED' ] &amp;&amp; [ "$install_progress" != '100' ]
+do
+    
+    sleep 5
+    
+    #Get State installation from ambari-server 
+    install_state=`curl -H "X-Requested-By: ambari" -X GET -u admin:admin http://localhost:8080/api/v1/clusters/$cluster_name/requests/1 | head -18 |tail -1 | cut -c 25-33`
+    install_progress=`curl -H "X-Requested-By: ambari" -X GET -u admin:admin http://localhost:8080/api/v1/clusters/$cluster_name/requests/1 | head -14 |tail -1 | cut -c 26-29`
+    
+    #Set the output parametre : "Hadoop_install_progress"
+    ss-set Hadoop_install_progress $install_progress
+    
+    
+    
+    #correction of hadoop_state message
+    if [ "$install_state" = 'IN_PROGRE' ]; then
+        install_state="IN_PROGRESS"
+        
+    elif [ "$install_state" = 'FAILED",' ]; then
+        install_state="FAILED"
+        
+    else
+        install_state=" Installation Error "
+    fi
+
+    #correction of (100, %)  to (100 %)
+    if [ "$install_progress" = '100.' ]; then
+        install_progress="100"
+    fi 
+    
+    
+    ss-set statecustom "Hadoop: ${install_state}  ${install_progress} %"
+
+ 
+done
+
+
+
+
+
+#--------------------------- vnc server install -------------------------------------------------------------------
+#{
+#ss-set statecustom 'Centos update packages...'
+## update all of the packages to the latest releases
+#yum update
+
+
+#ss-set statecustom 'Vnc server install...'
+##install gnome desktop environment
+#yum -y groupinstall Desktop
+
+
+##install VNC package along with dependencies
+#yum -y install tigervnc-server pixman pixman-devel libXfont
+
+
+## create a random password for vnc_user
+#vnc_password=`openssl rand -base64 6`
+#crypt_vnc_password=`echo $vnc_password | openssl passwd -crypt -stdin`
+
+
+## publish password so vnc_user can log in
+## will be visible in machine parameters in SlipStream interface
+#ss-set vnc_password $vnc_password
+
+##Create VNC password for the root
+#mkdir -p ~/.vnc
+#echo $vnc_password | vncpasswd -f &gt; ~/.vnc/passwd
+#chmod 0400 ~/.vnc/passwd
+
+
+##configure resolution for the root 
+#cat &gt; /etc/sysconfig/vncservers &lt;&lt;'EOF'
+#VNCSERVERS="1:root"
+#VNCSERVERARGS[1]="-geometry 1000x800"
+#EOF
+
+#ss-set statecustom 'Vnc server start...'
+##Start vnc service
+#service vncserver start
+
+
+##ouvre le port utilis&#233; par vnc
+#iptables -I INPUT 4 -j ACCEPT -p tcp --dport 5900:5902 
+
+
+## set the customstate to inform user that everything's ready
+#ss-set statecustom 'Centos 6 + vnc server Ready!'
+#}
+#------------------------------------------------------------------------------------------------------------------
+
+#set the ambari_ parameter (Username - Password)
+ss-set Ambari_Username 'admin'
+ss-set Ambari_Password 'admin'
+
+# set the deployment SSH url
+hostname=`ss-get hostname`
+url_ssh="ssh://root@${hostname}"
+ss-set url.ssh "${url_ssh}"
+
+hostname=`ss-get hostname`
+url="http://${hostname}:8080"
+ss-set ss:url.service ${url}
+ss-set url.service ${url}
+
+ss-set statecustom "${cluster_name} Ready"</target>
+      <target name="onvmremove">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+
+    ss-display "Removing slave ..."
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+
+
+
+        ss-display "Stop slave components"
+        #STOP all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 120
+
+
+
+        ss-display "Delete slave components"
+        #DELETE all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+       sleep 20
+
+
+
+        ss-display "Delete the slave"
+        #DELETE the host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+        sleep 5
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+    done
+
+
+fi
+
+
+ss-display "${cluster_name} Ready"
+</target>
+      <target name="onvmadd">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+    ss-display "Haddop: adding slave"
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+        slave_state=$(ss-get $INSTANCE_NAME:node_state)
+
+
+
+        while [ "$slave_state" != 'ambari_agent_ready' ]
+        do
+            ss-display "Wait new salve ..."
+            slave_state=$(ss-get $INSTANCE_NAME:node_state)
+            
+        done
+
+
+
+        ss-display "Add new salve ..."
+        #Add the host to the cluster.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+
+
+
+        ss-display "Add host components"
+        # Add the necessary host components to the host.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        sleep 5
+
+
+
+        ss-display "Install host components"
+        #Install the components
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 390
+
+
+
+        ss-display "Start host components"
+        #Start the components.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 100
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+    done
+
+
+
+fi
+
+
+
+ss-display "${cluster_name} Ready"
+</target>
+      <target name="report" />
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe />
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>Ambari_Password</string>
+         <parameter category="Output" description="Ambari_Password" isSet="false" mandatory="false" name="Ambari_Password" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>hadoop_installer_hostname</string>
+         <parameter category="Output" description="ambari server hostname (dns)" isSet="false" mandatory="false" name="hadoop_installer_hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>hadoop_installer_id_rsa64</string>
+         <parameter category="Output" description="base64 encoded ssh public key for ambari_server" isSet="false" mandatory="false" name="hadoop_installer_id_rsa64" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>Ambari_Username</string>
+         <parameter category="Output" description="Ambari_Username" isSet="false" mandatory="false" name="Ambari_Username" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>Hadoop_install_progress</string>
+         <parameter category="Output" description="% of Hadoop_install_progress" isSet="false" mandatory="false" name="Hadoop_install_progress" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>HDP_Cluster_Name</string>
+         <parameter category="Input" description="Hadoop_cluster name" isSet="true" mandatory="false" name="HDP_Cluster_Name" order="0" order_="0" readonly="false" type="String">
+            <value>My_Hadoop</value>
+            <defaultValue>My_Hadoop</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>dns_domain</string>
+         <parameter category="Output" description="Dns domain" isSet="false" mandatory="false" name="dns_domain" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

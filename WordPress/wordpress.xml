@@ -1,0 +1,162 @@
+<imageModule category="Image" creation="2013-11-16 07:43:14.5 UTC" deleted="false" description="Installs and configures WordPress using Puppet" isBase="false" isLatestVersion="true" lastModified="2015-07-01 23:18:30.150 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/wordpress.svg" moduleReferenceUri="module/examples/images/ubuntu-14.04" parentUri="module/apps/WordPress" platform="ubuntu" shortName="wordpress" version="1766">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-01 23:18:30.150 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
+   <targets>
+      <target name="onvmadd" />
+      <target name="onvmremove" />
+      <target name="execute">#!/bin/bash -x
+
+export admin_username=admin
+export admin_password=$(&lt; /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12)
+export admin_email=$(ss-get admin_email)
+export wordpress_title=$(ss-get wordpress_title)
+export mysql_password=$(&lt; /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12)
+export public_hostname=$(ss-get hostname)
+
+ss-set mysql_password $mysql_password
+ss-set admin_password $admin_password
+
+cat &gt; wp.pp &lt;&lt; EOF
+class { 'wordpress':
+  wp_owner    =&gt; 'www-data',
+  wp_group    =&gt; 'www-data',
+  db_user     =&gt; 'wordpress',
+  db_password =&gt; '$(mysql_password)'
+}
+EOF
+
+ss-display "Installing WordPress"
+puppet apply -v wp.pp
+
+ss-display "Configuring WordPress"
+
+base_url="http://${public_hostname}:8080"
+url="${base_url}/wp-admin/install.php?step=2"
+
+# quote the title since it can contain spaces
+/usr/bin/curl \
+    --data-urlencode "weblog_title=${wordpress_title}" \
+    -d "user_name=${admin_username}" \
+    -d "admin_password=${admin_password}" \
+    -d "admin_password2=${admin_password}" \
+    -d "admin_email=${admin_email}" \
+    -d "blog_public=1" -v ${url} &gt;&gt; /tmp/curl.out
+
+ss-set ss:url.service "${base_url}"
+ss-set url.service "${base_url}"
+
+ss-display "WordPress ready to go!"
+
+</target>
+      <target name="report" />
+   </targets>
+   <packages>
+      <package name="curl" />
+      <package name="libapache2-mod-php5" />
+      <package name="php5-mcrypt" />
+      <package name="mysql-server" />
+      <package name="puppet-common" />
+      <package name="php5" />
+      <package name="php5-mysql" />
+      <package name="mysql-client" />
+   </packages>
+   <prerecipe />
+   <recipe>#!/bin/bash
+
+function ss-display {
+    $(which ss-display) "$1" || echo "$1"
+}
+
+set -e
+
+ss-display "Updating package index"
+apt-get clean
+apt-get update
+
+ss-display "Installing WordPress manifest"
+puppet module install hunner-wordpress
+puppet module install puppetlabs-apache
+
+cat &gt; httpd.pp &lt;&lt; 'EOF'
+class { 'apache': 
+  mpm_module =&gt; 'prefork',
+}
+
+apache::vhost { 'wordpres':
+  vhost_name =&gt; '*',
+  port       =&gt; 8080,
+  docroot    =&gt; '/opt/wordpress',
+}
+
+apache::mod { 'php5': }
+
+EOF
+
+ss-display "Configuring Apache"
+puppet apply -v httpd.pp
+
+ln -s ../mods-available/php5.conf /etc/apache2/mods-enabled/php5.conf
+
+service apache2 restart
+
+</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>admin_email</string>
+         <parameter category="Input" description="admin email" isSet="true" mandatory="false" name="admin_email" order="0" order_="0" readonly="false" type="String">
+            <value>admin@example.com</value>
+            <defaultValue>admin@example.com</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>mysql_password</string>
+         <parameter category="Output" description="MySQL password" isSet="false" mandatory="false" name="mysql_password" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>admin_password</string>
+         <parameter category="Output" description="admin password" isSet="false" mandatory="false" name="admin_password" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>wordpress_title</string>
+         <parameter category="Input" description="Title (name) to give to the WordPress instance" isSet="true" mandatory="false" name="wordpress_title" order="0" order_="0" readonly="false" type="String">
+            <value>Change Me Please</value>
+            <defaultValue>Change Me Please</defaultValue>
+         </parameter>
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

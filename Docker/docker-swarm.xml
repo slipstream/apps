@@ -1,0 +1,194 @@
+<imageModule category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 15:47:30.256 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="1721">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets>
+      <target name="onvmremove">#!/bin/bash
+set -e
+
+
+ss-display "Docker: removing node"
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker rmi -f $node_ip
+    done
+
+fi
+
+
+ss-display "Docker Ready!"</target>
+      <target name="report" />
+      <target name="execute">#!/bin/bash -x
+
+hostname docker_manager
+
+
+#clean all
+yum -y clean all
+
+# update all of the packages to the latest releases
+#yum update
+
+
+#
+#install the docker-io package which will install Docker on our host
+#
+ss-display "docker install"
+yum -y install docker-io
+
+
+
+#
+#Starting the Docker daemon
+#
+ss-display "docker start"
+service docker start
+
+
+#
+#Install Swarm
+#
+ss-display "swarm install"
+docker pull swarm
+
+
+#
+#Create a Swarm cluster
+#
+ss-display "create cluster"
+cluster_id=`docker run --rm swarm create`
+
+ss-set cluster_id $cluster_id
+
+
+
+#
+#Register the Swarm agents to the discovery service
+#
+ss-display "register swarm agents"
+
+for (( i=1; i &lt;= `ss-get node:multiplicity`; i++ )); do
+node_ip=`ss-get --timeout 480 node.$i:hostname`
+docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
+done
+
+
+mkdir /root/docker
+cd /root/docker
+touch node_list
+touch container
+
+cat &lt;&lt; EOF &gt;&gt; /root/docker/node_list
+#!/bin/sh
+echo ""
+echo "SlipStream: List nodes in your cluster"
+echo "--------------------------------------"
+docker run --rm swarm list token://$cluster_id
+echo "--------------------------------------"
+echo ""
+EOF
+
+cat &lt;&lt; EOF &gt;&gt; /root/docker/container
+#!/bin/sh
+docker ps -l
+EOF
+
+chmod +x /root/docker/node_list
+chmod +x /root/docker/container
+
+#
+#Start the Swarm manager
+#
+ss-display "Start Swarm manager"
+docker run -d -p 2375 swarm manage token://$cluster_id
+
+#Run a Python Flask application (Web Application in Docker)
+#docker run -d -p 5000:5000 training/webapp python app.py
+container=`ss-get --timeout 480  container`
+docker run -d -it -p 80:80 $container
+
+
+
+
+# set the deployment url
+#hostname=`ss-get hostname`
+#ss-set hello_world_container "http://${hostname}:5000"
+#ss-set vnc_address "${hostname}:1"
+
+# set the deployment url to SSH url
+url=`ss-get url.ssh`
+ss-set ss:url.service "${url}"
+
+
+ss-display "Docker Ready"
+</target>
+      <target name="onvmadd">#!/bin/bash
+set -e
+
+#
+#Register the Swarm agents to the discovery service
+#
+ss-display "Docker: adding node"
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+    cluster_id=`ss-get --timeout 480 cluster_id`
+    
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
+    done
+
+fi
+
+ss-display "Docker Ready!"</target>
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe />
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>container</string>
+         <parameter category="Input" description="REPOSITORY" isSet="false" mandatory="false" name="container" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>cluster_id</string>
+         <parameter category="Output" description="Docker_swarm cluster_id" isSet="false" mandatory="false" name="cluster_id" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

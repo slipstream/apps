@@ -1,0 +1,80 @@
+<projectModule category="Project" creation="2014-02-11 11:15:01.221 UTC" deleted="false" description="Examples of application recipes for SlipStream provided by SixSq" isLatestVersion="true" lastModified="2015-07-02 13:42:37.387 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/apps.svg" parentUri="module/" shortName="apps" version="1793">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="false" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <children>
+      <item category="Project" description="Recipes to deploy a Couchbase Server" name="Couchbase" version="1781">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy a Docker Swarm manager with some Docker nodes" name="Docker" version="1695">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy a Drupal CMF" name="Drupal" version="1696">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy Galaxy (computational biology) " name="Galaxy" version="1701">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy an Hadoop cluster with Ambari" name="Hadoop" version="1704">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Demonstration LAMP deployment, using Ubuntu, HAProxy, Apache/PHP and MongoDB" name="LAMP" version="1724">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy a Minecraft server" name="Minecraft" version="1697">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy a MongoDB cluster" name="MongoDB" version="1700">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy an OpenERP " name="OpenERP" version="1698">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy an RStudio (statistical analysis platform)" name="RStudio" version="1703">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy SlipStream (slipstreamception)" name="SlipStream" version="1699">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="Recipes to deploy an Apache Torque with one master and multiple workers" name="Torque" version="1702">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+      <item category="Project" description="WordPress demo highlighting installation with Puppet" name="WordPress" version="1694">
+         <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+            <groupMembers />
+         </authz>
+      </item>
+   </children>
+   <parameters />
+</projectModule>

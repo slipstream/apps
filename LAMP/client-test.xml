@@ -1,0 +1,106 @@
+<imageModule category="Image" creation="2014-06-16 18:54:48.224 UTC" deleted="false" description="Simple test client checking correct lamp deployment" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:08.508 UTC" loginUser="ubuntu" logoLink="" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="client-test" version="1755">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
+   <targets>
+      <target name="report" />
+      <target name="onvmremove" />
+      <target name="execute">#!/bin/sh -xe
+
+
+
+#ss-display "Waiting for the apache nodes to be ready"
+#numApaches=$(ss-get apachephp:multiplicity)
+#for i in `seq 1 $numApaches`; do ss-get --timeout 3600 apachephp.$i:ready; done
+
+# TODO remove the previous wait (only for testing without HA proxy) and enable the following one (will need to add isHAready input param)
+
+# Wait for the HA proxy to be ready
+ss-display "Waiting for the HA proxy to be ready"
+ss-get --timeout 3600 isHAready
+
+apacheserverip=$(ss-get apacheserverip)
+
+ss-display "Writing to $apacheserverip"
+for i in `seq 1 10`; do
+  write=$(curl http://$apacheserverip:80/mongoWrite.php?value=$i | grep -v "^&lt;")
+  ss-display "$write to $apacheserverip"
+  sleep 2
+done
+
+ss-display "Reading from $apacheserverip"
+read=$(curl http://$apacheserverip:80/mongoRead.php | grep -v "^&lt;")
+ss-display "$read from $apacheserverip"
+</target>
+      <target name="onvmadd" />
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe>#!/bin/bash -xe
+
+function ss-display {
+    $(which ss-display) "$1" || echo "$1"
+}
+
+ss-display "Updating Ubuntu mirror location"
+cat &gt;&gt; /tmp/mirrors.txt &lt;&lt; 'EOF'
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse
+EOF
+
+cat /tmp/mirrors.txt | cat - /etc/apt/sources.list &gt; /tmp/sources.list
+cp -f /tmp/sources.list  /etc/apt/sources.list
+
+# increasing the apt cache size so it works
+echo "APT::Cache-Limit \"50331648\"\;" &gt;&gt;  /etc/apt/apt.conf.d/70debconf
+
+# Install curl
+ss-display "Installing curl"
+apt-get update -y
+apt-get install -y curl</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>webServerHostname</string>
+         <parameter category="Input" description="Web server (or load balancer) hostname" isSet="false" mandatory="false" name="webServerHostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>isWebServerReady</string>
+         <parameter category="Output" description="Web server (or load balancer) ready?" isSet="false" mandatory="false" name="isWebServerReady" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

@@ -1,0 +1,135 @@
+<imageModule category="Image" creation="2013-11-16 07:39:51.627 UTC" deleted="false" description="RStudio analysis server" isBase="false" isLatestVersion="true" lastModified="2015-07-01 23:08:20.428 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/rstudio.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/RStudio" platform="ubuntu" shortName="rstudio" version="1742">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-01 23:08:20.428 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
+   <targets>
+      <target name="report" />
+      <target name="onvmadd" />
+      <target name="onvmremove" />
+      <target name="execute">#!/bin/bash -x
+
+#
+# ==========
+#  Following section included as deployment recipe for cloud
+# ==========
+#
+
+#
+# create a random password for ruser
+#
+ruser_password=`openssl rand -base64 8`
+crypt_ruser_password=`echo $ruser_password | openssl passwd -crypt -stdin`
+
+#
+# create the ruser account with this password
+#
+adduser --quiet --disabled-password --gecos '' ruser
+usermod --password $crypt_ruser_password ruser
+
+#
+# publish password so user can log in
+# will be visible in machine parameters in SlipStream interface
+#
+ss-set rstudio_user ruser
+ss-set rstudio_pswd $ruser_password
+
+#
+# restart the server to ensure all changes are taken into account
+#
+rstudio-server restart 
+
+hostname=`ss-get hostname`
+url="http://${hostname}"
+ss-set ss:url.service ${url}
+ss-set url.service ${url}
+
+#
+# set the customstate to inform user that everything's ready
+#
+ss-set statecustom 'RStudio Ready!'</target>
+   </targets>
+   <packages>
+      <package name="libapparmor1" />
+      <package name="gdebi-core" />
+      <package name="r-base" />
+   </packages>
+   <prerecipe />
+   <recipe>#!/bin/bash -x
+
+#
+# ==========
+#  Following section included as image recipe for cloud
+#  that support image building.
+# ==========
+#
+
+#
+# Clean &amp; update
+apt-get clean
+apt-get update
+
+
+#
+# install RStudio
+#
+wget http://download2.rstudio.org/rstudio-server-0.97.551-amd64.deb
+gdebi --non-interactive rstudio-server-0.97.551-amd64.deb
+
+#
+# put this on standard port
+#
+echo 'www-port=80' &gt; /etc/rstudio/rserver.conf
+
+#
+# finish by upgrading entire system
+#
+apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" -y upgrade
+
+#
+# ==========
+#</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>rstudio_pswd</string>
+         <parameter category="Output" description="password for RStudio" isSet="false" mandatory="false" name="rstudio_pswd" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>rstudio_user</string>
+         <parameter category="Output" description="username for RStudio" isSet="false" mandatory="false" name="rstudio_user" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

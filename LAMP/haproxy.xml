@@ -1,0 +1,236 @@
+<imageModule category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:29.149 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="1757">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets>
+      <target name="onvmremove" />
+      <target name="execute">#!/bin/bash -xe
+
+
+
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg_orig
+cat /dev/null &gt; /etc/haproxy/haproxy.cfg
+cat &gt;&gt;  /etc/haproxy/haproxy.cfg &lt;&lt; 'EOF'
+
+global
+        log 127.0.0.1   local0
+        log 127.0.0.1   local1 notice
+        #log loghost    local0 info
+        maxconn 4096
+        #debug
+        #quiet
+        user haproxy
+        group haproxy
+
+defaults
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        retries 3
+        option redispatch
+        maxconn 2000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+
+listen webfarm :80
+       mode http
+       stats enable
+       stats auth someuser:somepassword
+       balance roundrobin
+       cookie JSESSIONID prefix
+       option httpclose
+       option forwardfor
+       option httpchk HEAD / HTTP/1.0
+EOF
+
+##sed -i s/%VIRTUALIP%/$VIRTUALIP/ /etc/haproxy/haproxy.cfg
+# add the config line from each of the webservers, wait for the apache servers first
+
+# ::: recover and set HAPROXY info
+
+ss-display "Waiting for the nodename and id from apache servers"
+
+APACHE_NODENAME=$(ss-get --timeout 360 web_nodename)
+APACHE_IDS=$(ss-get $APACHE_NODENAME:ids)
+#HAPROXY_NODE=$(ss-get nodename)
+#HAPROXY_INDEX=$(ss-get index)
+
+
+# gather info from all the other apache nodes 
+
+for i in ${APACHE_IDS//,/ };
+ do   
+    ss-display "Waiting for ${i}th Apache node: $APACHE_NODENAME.${i}:hostname"
+    WN_IP=$(ss-get --timeout 360 $APACHE_NODENAME.${i}:hostname)
+    WN_READINESS=$(ss-get --timeout 600 $APACHE_NODENAME.${i}:ready)
+    WN_HOSTNAME=${APACHE_NODENAME}${i}
+    
+    WN_HOSTNAMES="$WN_HOSTNAMES,$WN_IP"
+    COOKIE=$(echo $((64 + i)) |awk '{printf "%c\n", $1}') 
+    echo "  server web$COOKIE ${WN_IP}:80 cookie $COOKIE check" &gt;&gt; /etc/haproxy/haproxy.cfg
+ 
+    
+done 
+
+sed -i s/ENABLED=0/ENABLED=1/ /etc/default/haproxy
+
+# # enable HA in the service (vs. only balancing)
+# 
+# sed -i s/ENABLED=0/ENABLED=1/ /etc/default/haproxy
+# 
+# 
+# # ::: Keepalived :::
+# ss-display "Installing keepalived"
+# apt-get -y install keepalived
+# 
+# cat &gt;&gt; /etc/sysctl.d/60-keepalived.conf &lt;&lt; 'EOF'
+# net.ipv4.ip_nonlocal_bind=1
+# EOF
+# ss-display "Restarting sysctl.."
+# service procps start
+# 
+# cat &gt;&gt; /etc/keepalived/keepalived.conf &lt;&lt; 'EOF'
+# 
+# vrrp_script chk_haproxy {           # Requires keepalived-1.1.13
+#         script "killall -0 haproxy"     # cheaper than pidof
+#         interval 2                      # check every 2 seconds
+#         weight 2                        # add 2 points of prio if OK
+# }
+# 
+# vrrp_instance VI_1 {
+#         interface eth0
+#         state MASTER
+#         virtual_router_id 77
+#         priority %PRIORITY%                    # 101 on master, 100 on backup
+#         virtual_ipaddress {
+#             %VIRTUALIP%
+#         }
+#         track_script {
+#             chk_haproxy
+#         }
+# }
+# 
+# EOF
+# 
+# 
+# 
+# # 1st node is always the master, we decrement priority for all others
+# PRIORITY=$((102-HAPROXY_INDEX))
+# ss-display "Replace Virtual IP to $VIRTUALIP for keepalived and set priority to $PRIORITY"
+# 
+# sed -i s/%PRIORITY%/$PRIORITY/ /etc/keepalived/keepalived.conf 
+# sed -i s/%VIRTUALIP%/$VIRTUALIP/ /etc/keepalived/keepalived.conf 
+# ss-display "Starting keepalived"
+# service keepalived start	
+
+IPSTATUS=$(ip addr sh eth0)
+
+ss-display "Starting HAProxy with IP status $IPSTATUS"
+service haproxy start
+#ss-display "Started HAProxy. Should be ready on the port $VIRTUALIP"
+
+#ss-set apacheserverip $VIRTUALIP
+
+URL=http://$(ss-get hostname)
+ss-set url.service $URL
+ss-set ss:url.service $URL
+
+ss-set ready true
+</target>
+      <target name="onvmadd" />
+      <target name="report" />
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe>#!/bin/bash -xe
+
+function ss-display {
+    $(which ss-display) "$1" || echo "$1"
+}
+
+# create a data filesystem for DB
+ss-display "Updating Ubuntu mirror location"
+cat &gt;&gt; /tmp/mirrors.txt &lt;&lt; 'EOF'
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse
+EOF
+
+cat /tmp/mirrors.txt | cat - /etc/apt/sources.list &gt; /tmp/sources.list
+cp -f /tmp/sources.list  /etc/apt/sources.list
+
+
+#increasing the apt cache size so it works
+echo "APT::Cache-Limit \"50331648\"\;" &gt;&gt;  /etc/apt/apt.conf.d/70debconf 
+
+apt-get update -y
+
+
+# retrieve the IPs of the web backend
+
+
+
+# if master, retrieve the stolen last free IP for virtual IP from the subnet 
+##ss-display "Installing fping"
+##apt-get -y install fping
+
+##MYIP=$(ifconfig eth0 | grep 'inet addr' | awk  'BEGIN{FS="[: ]+"}{print $4}');
+##MYSUB=$(echo $MYIP | awk -F \. '{print $1"."$2"."$3".0/24";}')
+
+##ss-display "Retrieving unassigned IP from the subnet.."
+#VIRTUALIP=$(fping -g $MYSUB 2&gt;/dev/null | grep 'is unreachable' | cut -d ' ' -f 1 | sort -t '.' -k 4 -n | tail -n 2 | head -n 1)
+#VIRTUALIP=$(ss-get --timeout 360 donatedIP)
+
+#::: HAProxy :::
+# install haproxy
+
+#ss-display "Installing haproxy with IP $MYIP and virtual IP: $VIRTUALIP"
+ss-display "Installing haproxy"
+apt-get -y install haproxy
+</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>web_nodename</string>
+         <parameter category="Input" description="Nodename of the web node" isSet="false" mandatory="false" name="web_nodename" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>ready</string>
+         <parameter category="Output" description="HAProxy ready to load balance" isSet="false" mandatory="false" name="ready" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

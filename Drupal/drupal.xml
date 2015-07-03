@@ -1,0 +1,176 @@
+<imageModule category="Image" creation="2014-06-23 09:22:29.478 UTC" deleted="false" description="Single node deployment of Drupal 7" isBase="false" isLatestVersion="true" lastModified="2015-07-01 22:44:07.284 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/drupal.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Drupal" platform="centos" shortName="drupal" version="1738">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-01 22:44:07.284 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
+   <targets>
+      <target name="onvmadd" />
+      <target name="execute">#!/usr/bin/env bash
+
+# Fail fast and fail hard.
+set -eox pipefail
+
+# Settings
+DRUPAL_VERION=7.28
+
+db_root_password=$(ss-get db_root_password)
+db_user=$(ss-get db_user)
+db_password=$(ss-get db_password)
+db_name='drupal'
+db_type='mysql'
+site_name=$(ss-get site_name)
+site_email=$(ss-get site_email)
+admin_user=$(ss-get admin_user)
+admin_password=$(ss-get admin_password)
+admin_email=$(ss-get admin_email)
+
+ss-display "Installing EPEL"
+yum -y localinstall http://mirror.switch.ch/ftp/mirror/epel/6/i386/epel-release-6-8.noarch.rpm
+
+ss-display "Installing MySQL"
+yum install -y mysql mysql-server
+
+service mysqld start
+chkconfig mysqld on
+
+ss-display "Configuring the database"
+mysqladmin -u root password $db_root_password
+mysqladmin -u root -p$db_root_password create $db_name
+mysql -u root -p$db_root_password -e "create user '$db_user'@'localhost' identified by '$db_password'";
+mysql -u root -p$db_root_password -e "grant all privileges on $db_name.* to '$db_user'@'localhost'";
+
+yum install -y httpd php-mysql php-devel php-gd php-drush-drush
+
+ss-display "Installing Drupal-${DRUPAL_VERION}"
+drush dl drupal-${DRUPAL_VERION} \
+   --drupal-project-rename=drupal \
+   --destination=/var/www/html/
+
+chown -R apache.apache /var/www/html/drupal 
+cd /var/www/html/drupal
+
+ss-display "Configuring Drupal-${DRUPAL_VERION}"
+yes | drush site-install standard \
+   --account-name=${admin_user} \
+   --account-pass=${admin_password} \
+   --account-mail=${admin_email} \
+   --db-su=${db_user} \
+   --db-su-pw=${db_password} \
+   --locale=en \
+   --site-mail=${site_email} \
+   --site-name="${site_name}" \
+   --clean-url=0 \
+   --db-url=mysql://root:${db_root_password}@localhost/${db_name} || true
+
+mkdir -p /var/www/html/drupal/sites/default/files
+chown -R apache.apache /var/www/html/drupal/sites/default/files
+
+iptables -I INPUT 1 -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+iptables-save &gt; /etc/sysconfig/iptables
+
+service httpd start
+chkconfig httpd on
+
+hostname=$(ss-get hostname)
+ss-set ss:url.service http://${hostname}/drupal
+
+ss-display "Drupal is ready to go!"
+</target>
+      <target name="onvmremove" />
+      <target name="report" />
+   </targets>
+   <packages />
+   <prerecipe />
+   <recipe />
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>admin_email</string>
+         <parameter category="Input" description="The email to use for the site administrator." isSet="true" mandatory="false" name="admin_email" order="0" order_="0" readonly="false" type="String">
+            <value>admin@example.com</value>
+            <defaultValue>admin@example.com</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>db_root_password</string>
+         <parameter category="Input" description="The root password to configure." isSet="true" mandatory="false" name="db_root_password" order="0" order_="0" readonly="false" type="String">
+            <value>CHANGE_ME</value>
+            <defaultValue>CHANGE_ME</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>db_password</string>
+         <parameter category="Input" description="The password to use when connecting to the database." isSet="true" mandatory="false" name="db_password" order="0" order_="0" readonly="false" type="String">
+            <value>CHANGE_ME</value>
+            <defaultValue>CHANGE_ME</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>admin_password</string>
+         <parameter category="Input" description="The password to use for the site administrator." isSet="true" mandatory="false" name="admin_password" order="0" order_="0" readonly="false" type="String">
+            <value>CHANGE_ME</value>
+            <defaultValue>CHANGE_ME</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>site_email</string>
+         <parameter category="Input" description="The email to use for the site support." isSet="true" mandatory="false" name="site_email" order="0" order_="0" readonly="false" type="String">
+            <value>webmaster@example.com</value>
+            <defaultValue>webmaster@example.com</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>site_name</string>
+         <parameter category="Input" description="The name of the site you're deploying." isSet="true" mandatory="false" name="site_name" order="0" order_="0" readonly="false" type="String">
+            <value>Drupal deployed by SlipStream</value>
+            <defaultValue>Drupal deployed by SlipStream</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>db_user</string>
+         <parameter category="Input" description="The username to use when connecting to the database." isSet="true" mandatory="false" name="db_user" order="0" order_="0" readonly="false" type="String">
+            <value>drupal</value>
+            <defaultValue>drupal</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>admin_user</string>
+         <parameter category="Input" description="The username to use the site administrator." isSet="true" mandatory="false" name="admin_user" order="0" order_="0" readonly="false" type="String">
+            <value>admin</value>
+            <defaultValue>admin</defaultValue>
+         </parameter>
+      </entry>
+   </parameters>
+   <notes length="0" />
+</imageModule>

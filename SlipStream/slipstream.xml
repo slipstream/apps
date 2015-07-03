@@ -1,0 +1,102 @@
+<imageModule category="Image" creation="2015-07-02 22:39:37.381 UTC" deleted="false" description="SlipStream community edition" isBase="false" isLatestVersion="true" lastModified="2015-07-03 13:49:44.380 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream" version="1834">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-03 13:49:44.380 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets>
+      <target name="onvmremove" />
+      <target name="onvmadd" />
+      <target name="report">#!/usr/bin/env bash
+
+set -x
+set -e
+set -o pipefail
+
+cp /tmp/slipstream-install.log $SLIPSTREAM_REPORT_DIR
+cp /opt/slipstream/server/logs/* $SLIPSTREAM_REPORT_DIR
+cp /tmp/slipstream-connectors-install.log $SLIPSTREAM_REPORT_DIR
+
+ss-display 'SlipStream is Ready!'
+
+</target>
+      <target name="execute">#!/usr/bin/env bash
+
+set -x
+set -e
+set -o pipefail
+
+SS_EDITION='community'
+SS_REPO_KIND=$(ss-get --noblock repo_kind) # snapshot|candidate|release
+
+ss-display 'Updating packages'
+yum -y update || true
+
+ss-display 'Installing SlipStream'
+curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream-install.sh | bash -s ${SS_EDITION:-community} ${SS_REPO_KIND:-release}
+
+url="https://$(ss-get hostname)"
+ss-set ss:url.service ${url}
+ss-set url.service ${url}
+
+ss-display 'SlipStream is Ready!'
+
+</target>
+   </targets>
+   <packages>
+      <package name="bash-completion" />
+   </packages>
+   <prerecipe />
+   <recipe>#!/usr/bin/env bash
+
+set -x
+set -e
+set -o pipefail
+
+yum -y update
+
+sync
+sleep 1
+
+</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>repo_kind</string>
+         <parameter category="Input" description="&lt;release|candidate|snapshot&gt;" isSet="true" mandatory="false" name="repo_kind" order="0" order_="0" readonly="false" type="String">
+            <value>release</value>
+            <defaultValue>release</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

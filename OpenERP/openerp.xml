@@ -1,0 +1,129 @@
+<imageModule category="Image" creation="2014-02-24 14:45:44.921 UTC" deleted="false" description="Install and configure an OpenERP instance backed with postgres" isBase="false" isLatestVersion="true" lastModified="2015-07-01 23:25:35.826 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/openerp.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/OpenERP" platform="ubuntu" shortName="openerp" version="1767">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-01 23:25:35.826 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
+   <targets>
+      <target name="onvmadd" />
+      <target name="execute">#!/usr/bin/env bash
+# WARNING:
+#
+#    Don't forget to open port 8069 to use that recipe.
+#    Once deployed, use: http://&lt;instance_ip&gt;:8069
+#    to setup your OpenERP instance and start enjoying it.
+
+# Fail fast and fail hard.
+set -eox pipefail
+
+url="http://$(ss-get hostname):8069"
+ss-set ss:url.service ${url}
+ss-set url.service ${url}
+
+ss-display "OpenERP ready!"
+
+</target>
+      <target name="report" />
+      <target name="onvmremove" />
+   </targets>
+   <packages>
+      <package name="puppet-common" />
+   </packages>
+   <prerecipe>#!/usr/bin/env bash
+
+# Fail fast and fail hard.
+set -eox pipefail
+
+# Pre-recipe
+release_name=$(lsb_release -cs)
+wget https://apt.puppetlabs.com/puppetlabs-release-${release_name}.deb
+dpkg -i puppetlabs-release-${release_name}.deb
+
+# Workaround to alkivi/openerp
+echo "deb http://nightly.openerp.com/7.0/nightly/deb/ ./" &gt; /etc/apt/sources.list.d/openerp.list
+
+apt-get update
+
+sync
+sleep 1
+
+</prerecipe>
+   <recipe>#!/usr/bin/env bash
+
+# Fail fast and fail hard.
+set -eox pipefail
+
+# Installing OpenERP even if the repo is not signed
+apt-get install -y --force-yes openerp
+
+# Post-recipe
+mkdir -p /etc/puppet/{modules,manifests}
+
+# Recipe
+# Installing OpenERP from puppet doesn't work due to unsigned package,
+# see pre-recipe for workaround.
+#puppet module install alkivi/openerp
+puppet module install puppetlabs/postgresql
+
+cat &gt; /etc/puppet/manifests/app.pp &lt;&lt;EOF
+# class { 'openerp': }
+class { 'postgresql::server': }
+
+postgresql::server::role { 'openerp':
+  password_hash =&gt; postgresql_password('openerp', 'admin'),
+  createdb      =&gt; true,
+  login         =&gt; true,
+}
+EOF
+puppet apply /etc/puppet/manifests/app.pp
+
+# Workaround to expose UTF-8 compliant template
+cat &gt; /tmp/template1.sql &lt;&lt;EOF
+UPDATE pg_database SET datistemplate = FALSE WHERE datname = 'template1';
+DROP DATABASE template1;
+CREATE DATABASE template1 WITH TEMPLATE = template0 ENCODING = 'UNICODE';
+UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template1';
+\c template1
+VACUUM FREEZE;
+EOF
+su -c "psql &lt; /tmp/template1.sql" postgres
+
+sync
+sleep 1
+
+</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      </parameters>
+   <notes length="0" />
+</imageModule>

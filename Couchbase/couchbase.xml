@@ -1,0 +1,120 @@
+<imageModule category="Image" creation="2014-02-10 14:20:53.788 UTC" deleted="false" description="Install and configure a Couchbase Server Community v2.1.1 instance" isBase="false" isLatestVersion="true" lastModified="2015-07-02 13:24:57.211 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/couchbase.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Couchbase" platform="centos" shortName="couchbase" version="1785">
+   <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
+      <groupMembers>
+         </groupMembers>
+   </authz>
+   <commit author="sixsq">
+      <comment>Initial version of this module</comment>
+   </commit>
+   <published publicationDate="2015-07-02 13:24:57.211 UTC" />
+   <cloudNames length="12">
+      </cloudNames>
+   <runs count="2" limit="20" offset="0" totalCount="2">
+      </runs>
+   <targets>
+      <target name="onvmadd" />
+      <target name="report" />
+      <target name="onvmremove" />
+      <target name="execute">#!/usr/bin/env bash
+
+set x
+set e
+
+# Settings
+export PATH=/opt/couchbase/bin:$PATH
+COUCHBASE_USER=$(ss-get couchbase-user)
+COUCHBASE_PASSWORD=$(ss-get couchbase-password)
+COUCHBASE_BUCKET=$(ss-get couchbase-bucket)
+
+# Waiting for Couchbase Server to start
+while ! nc -z 127.0.0.1 8091; do sleep 1s; done
+
+# Configuring Couchbase Server administrator account
+couchbase-cli cluster-init -c 127.0.0.1:8091 \
+    --cluster-init-username=$COUCHBASE_USER \
+    --cluster-init-password=$COUCHBASE_PASSWORD || true
+
+# Creating Couchbase bucket
+couchbase-cli bucket-create -c 127.0.0.1:8091 -u $COUCHBASE_USER -p $COUCHBASE_PASSWORD \
+   --bucket=$COUCHBASE_BUCKET \
+   --bucket-type=couchbase \
+   --bucket-ramsize=256 \
+   --wait || true
+
+ss-display 'Configuring the firewall'
+iptables -I INPUT 4 -j ACCEPT -p tcp --dport 8091:8092 -m conntrack --ctstate NEW -m comment --comment 'Couchbase'
+
+url="http://$(ss-get hostname):8091"
+ss-set ss:url.service ${url}
+ss-set url.service ${url}
+
+ss-display "Couchbase ready!"
+
+</target>
+   </targets>
+   <packages>
+      <package name="nc" />
+   </packages>
+   <prerecipe />
+   <recipe>#!/usr/bin/env bash
+
+set x
+set e
+
+# Install Couchbase Server Community v2.1.1
+[ -e couchbase-server-community_x86_64_2.1.1.rpm ] || curl -L -O http://packages.couchbase.com/releases/2.1.1/couchbase-server-community_x86_64_2.1.1.rpm
+yum localinstall -y couchbase-server-community_x86_64_2.1.1.rpm
+
+sync
+sleep 1
+
+</recipe>
+   <cloudImageIdentifiers />
+   <parameters>
+      <entry>
+         <string>couchbase-password</string>
+         <parameter category="Input" description="admin password of the cluster" isSet="true" mandatory="false" name="couchbase-password" order="0" order_="0" readonly="false" type="String">
+            <value>password</value>
+            <defaultValue>password</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>couchbase-user</string>
+         <parameter category="Input" description="admin username of the cluster" isSet="true" mandatory="false" name="couchbase-user" order="0" order_="0" readonly="false" type="String">
+            <value>Administrator</value>
+            <defaultValue>Administrator</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>hostname</string>
+         <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>extra.disk.volatile</string>
+         <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>instanceid</string>
+         <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>couchbase-bucket</string>
+         <parameter category="Input" description="bucket to create" isSet="true" mandatory="false" name="couchbase-bucket" order="0" order_="0" readonly="false" type="String">
+            <value>slipstream_bucket</value>
+            <defaultValue>slipstream_bucket</defaultValue>
+         </parameter>
+      </entry>
+   </parameters>
+   <notes length="0" />
+</imageModule>
