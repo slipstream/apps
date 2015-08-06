@@ -7,7 +7,7 @@ All SlipStream modules of this repository are licensed under the *Apache License
 See [LICENSE](LICENSE) for more details.
 
 ## Update the content of this repository from Nuvla&trade;
-To fetch the current version of the apps from Nuvla&trade;, clone this repository and then execute the following script into the directory corresponding to this repository you've just cloned:
+To fetch the current version of the apps from [Nuvla&trade;](http://nuv.la), clone this repository and then execute the following script into the directory corresponding to this repository you've just cloned:
 ```bash
 #!/bin/env bash -x
 
@@ -19,7 +19,7 @@ ss-module-download -u <username> -p <password> \
 popd
 ```
 
-`<username>` and `<password>` should be valid credentials for the Nuvla&trade; service.
+`<username>` and `<password>` should be valid credentials for the [Nuvla&trade;](http://nuv.la) service.
 
 ## Push these apps to your SlipStream instance
 To push these apps to your SlipStream instance, execute the following script in a linux machine:
@@ -41,6 +41,6 @@ popd
 rm -Rf $tmpdir
 ```
 
-`<username>` and `<password>` should be valid credentials for the Nuvla&trade; service.
+`<username>` and `<password>` should be valid credentials for the [Nuvla&trade;](http://nuv.la) service.
 
 `<SlipStream IP/HOSTNAME>` should correspond to the IP address (or the hostname) of your SlipStream instance.
