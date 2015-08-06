@@ -46,5 +46,5 @@ rm -Rf $tmpdir
 `<SlipStream IP/HOSTNAME>` should correspond to the IP address (or the hostname) of your SlipStream instance.
 
 Alternatively, on a vanilla system (without existing modules) you can inflate the xml files in your configuration
-directory, find [here more detailed documentation](http://ssdocs.sixsq.com/documentation/developer_guide/configuration.html)
+directory, find [here more detailed documentation](http://ssdocs.sixsq.com/documentation/developer_guide/configuration_files.html)
 on this feature.
