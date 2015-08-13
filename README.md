@@ -44,3 +44,5 @@ rm -Rf $tmpdir
 `<username>` and `<password>` should be valid credentials for the [Nuvla&trade;](http://nuv.la) service.
 
 `<SlipStream IP/HOSTNAME>` should correspond to the IP address (or the hostname) of your SlipStream instance.
+
+Or alternatively, drop the *.xml files in your configuration, such that [SlipStream loads them automatically](http://ssdocs.sixsq.com/documentation/developer_guide/configuration_files.html).
