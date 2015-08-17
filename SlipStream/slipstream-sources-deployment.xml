@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-07-01 16:27:21.82 UTC" deleted="false" description="Deployment of a MongoDB cluster with a majority replication scheme" isLatestVersion="true" lastModified="2015-07-01 22:37:55.595 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" parentUri="module/apps/MongoDB" shortName="mongodb-cluster-deployment" version="1729">
+<deploymentModule category="Deployment" creation="2015-05-14 10:11:42.724 UTC" deleted="false" description="deploys from sources allowing inclusion in CI system" isLatestVersion="true" lastModified="2015-08-17 13:11:34.954 UTC" logoLink="" parentUri="module/apps/SlipStream" shortName="slipstream-sources-deployment" version="1879">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,18 +6,115 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <published publicationDate="2015-07-01 22:37:55.595 UTC" />
    <cloudNames length="12">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <nodes>
       <entry>
-         <string>db</string>
-         <node cloudService="default" creation="2015-07-01 16:27:21.82 UTC" deleted="false" imageUri="module/apps/MongoDB/mongodb" maxProvisioningFailures="0" multiplicity="3" name="db" network="Public">
-            <parameterMappings />
-            <parameters />
-            <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:34.961 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="1758">
-               <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
+         <string>slipstream</string>
+         <node cloudService="default" creation="2015-08-17 13:11:34.946 UTC" deleted="false" imageUri="module/apps/SlipStream/slipstream-sources" maxProvisioningFailures="0" multiplicity="1" name="slipstream" network="Public">
+            <parameterMappings>
+               <entry>
+                  <string>slipstream_server_deps_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_server_deps_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_ui_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_client_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_client_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_server_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>install_examples</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="install_examples" order="0" order_="0" readonly="false" type="String">
+                     <value>'true'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>skip_tests</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="skip_tests" order="0" order_="0" readonly="false" type="String">
+                     <value>'true'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_connectors_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+            </parameterMappings>
+            <parameters>
+               <entry>
+                  <string>slipstream_server_deps_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_server_deps_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_ui_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_client_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_client_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_server_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>install_examples</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="install_examples" order="0" order_="0" readonly="false" type="String">
+                     <value>'true'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>skip_tests</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="skip_tests" order="0" order_="0" readonly="false" type="String">
+                     <value>'true'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_connectors_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
+            </parameters>
+            <image category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-08-17 13:03:54.196 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/SlipStream/slipstream-sources" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="1875">
+               <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
                      <string>konstan</string>
@@ -28,309 +125,188 @@
                      <string>stef</string>
                   </groupMembers>
                </authz>
-               <commit author="lionel">
-                  <comment>Added the function ss-display into Image Creation Recipes</comment>
+               <commit author="sixsq">
+                  <comment>update permissions to allow anyone to run module</comment>
                </commit>
                <targets>
-                  <target name="report" />
-                  <target name="onvmremove" />
-                  <target name="execute">#!/bin/bash -xe
+                  <target name="execute">#!/bin/bash -x
+
+# fail quickly on any error
+set -e
+
+slipstream_version=`ss-get slipstream_version`
+slipstream_client_version=`ss-get slipstream_client_version`
+slipstream_connectors_version=`ss-get slipstream_connectors_version`
+slipstream_server_version=`ss-get slipstream_server_version`
+slipstream_server_deps_version=`ss-get slipstream_server_deps_version`
+slipstream_ui_version=`ss-get slipstream_ui_version`
+skip_tests=`ss-get skip_tests`
+install_examples=`ss-get install_examples`
 
 
-function waitForReplicaSet(){
+#
+# upgrade system
+#
+ss-set statecustom "Upgrading system..."
+yum clean all
+yum upgrade -y
 
-retries=100
-MONGO_REPLICA_RESULT="NOTREADY"
-while [[ $MONGO_REPLICA_RESULT != 'READY' ]] &amp;&amp; [[ $retries -ne 0 ]]
-do
-MONGO_REPLICA_RESULT=$(mongo --quiet /tmp/replicaInit.js | awk 'BEGIN{FS=":"}{print $1;}')
-ss-display "Got response from replicaSet: $MONGO_REPLICA_RESULT."
-sleep 5
-if [[  $MONGO_REPLICA_RESULT != 'READY' ]]
-then
-ss-display "Sleeping more $retries time..."
-fi
-(( retries-- ))
+#
+# install dependencies
+#
+ss-set statecustom "Installing build dependencies..."
+yum install -y epel-release
+#curl http://mirrors.ukfast.co.uk/sites/dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm &gt; epel-release-6-8.noarch.rpm
+#yum install -y epel-release-6-8.noarch.rpm
+yum clean all
+yum erase -y python-paramiko python-crypto
+yum install -y \
+  java-1.8.0-openjdk-devel \
+  python \
+  python-devel \
+  pylint \
+  python-pip \
+  python-mock \
+  gcc \
+  git \
+  rpm-build \
+  createrepo
+  
+#
+# SlipStream python dependencies that require
+# versions that are more recent than packages.
+#
+ss-set statecustom "Installing python dependencies..."
+pip install nose coverage paramiko
 
+#
+# my sanity!
+#
+ss-set statecustom "Installing sanity..."
+yum install -y emacs-nox
+
+#
+# work from home directory
+#
+export HOME=/root
+cd ${HOME}
+
+#
+# install latest maven version
+#
+ss-set statecustom "Installing maven..."
+maven_version=3.3.3
+curl -o apache-maven-${maven_version}-bin.tar.gz \
+    http://mirror.switch.ch/mirror/apache/dist/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz
+tar zxf apache-maven-${maven_version}-bin.tar.gz
+
+export MAVEN_HOME=~/apache-maven-${maven_version}
+export MAVEN_OPTS=-Xmx2048M
+export PATH=$PATH:$MAVEN_HOME/bin:${HOME}/bin
+
+#
+# install leiningen
+#
+ss-set statecustom "Installing leiningen..."
+curl -o lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+mkdir ~/bin
+mv lein ~/bin
+chmod a+x ~/bin/lein
+export LEIN_ROOT=true
+lein
+
+#
+# clone the SlipStream source code
+#
+ss-set statecustom "Cloning SlipStream source code..."
+git clone https://github.com/slipstream/SlipStreamBootstrap
+
+cd SlipStreamBootstrap
+mvn -P public \
+  -B \
+  -Dslipstream.version=${slipstream_version} \
+  -Dslipstream.client.version=${slipstream_client_version} \
+  -Dslipstream.connectors.version=${slipstream_connectors_version} \
+  -Dslipstream.server.version=${slipstream_server_version} \
+  -Dslipstream.server.deps.version=${slipstream_server_deps_version} \
+  -Dslipstream.ui.version=${slipstream_ui_version} \
+  generate-sources
+
+#
+# build SlipStream
+#
+ss-set statecustom "Building SlipStream..."
+cd SlipStream
+mvn -B -DskipTests=${skip_tests} clean install
+
+#
+# make local yum repository
+#
+ss-set statecustom "Creating YUM repository..."
+mkdir -p /opt/slipstream
+cd /opt/slipstream
+tar zxf ~/SlipStreamBootstrap/SlipStream/yum/target/SlipStream*.tar.gz
+
+#
+# quick installation from local repository
+#
+ss-set statecustom "Installing SlipStream..."
+export SLIPSTREAM_EXAMPLES=${install_examples}
+curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream-install.sh | bash -s community local
+
+#
+# restarting services (probably not necessary)
+service slipstream restart
+service ssclj restart
+service nginx restart
+
+#
+# set the service URL
+#
+ss-set statecustom "SlipStream Ready!"
+hostname=`ss-get hostname`
+url="https://${hostname}"
+ss-set ss:url.service ${url}
+
+#
+# validate that the installation worked
+#
+ss-set statecustom "Validating service..."
+exit_code=0
+
+profile_url="${url}/user/super"
+
+tries=0
+while [ $tries -lt 5 ]; do
+
+  rc=`curl -k -s -u super:supeRsupeR -o /dev/null -w "%{http_code}" ${profile_url}`
+  echo "Return code from super profile page is " ${rc}
+  if [ "${rc}" -ne "200" ]; then
+    echo "Return code from super profile page was not 200."
+    exit_code=1
+  else
+    echo "Return code from super profile page was 200."
+    exit_code=0
+    exit $exit_code
+  fi
+
+  sleep 10
+  tries=$[$tries+1]
 
 done
 
-return 0;
-}
-
-
-#Initialize pyMongo
-function pymongo_instal(){
-# Install easy_install
-wget https://bitbucket.org/pypa/setuptools/raw/0.7.7/ez_setup.py -O - | python
-# Install python driver for mongo
-/usr/local/bin/easy_install pymongo
-}
-
-
-
-
-
-# stop the DB, provide the proper configuration file: different for the master, different for the slaves or choose a replica set node belongs to 
-# make sure the server is accessible from the other nodes
-mkdir -p /data/mongodb
-chown -R mongodb:mongodb /data/mongodb
-
-# journaling space &gt;= RAM in mongo
-mkdir -p /data/mongodb/log
-chown -R mongodb:mongodb  /data/mongodb/log
-
-# create the config file and start the service
-
-
-cat &gt;   /etc/mongodb.conf  &lt;&lt; 'EOF'
-
-# mongodb.conf
-
-smallfiles=true
-
-# Where to store the data.
-
-# Note: if you run mongodb as a non-root user (recommended) you may
-# need to create and set permissions for this directory manually,
-# e.g., if the parent directory isn't mutable by the mongodb user.
-dbpath=/data/mongodb
-
-#daemonize 
-fork=true
-
-#where to log
-logpath=/data/mongodb/mongodb.log
-
-logappend=true
-quiet = false
-
-#port = 27017
-
-#replica set
-replSet = rs0
-
-# Disables write-ahead journaling
-# nojournal = true
-
-# Enables periodic logging of CPU utilization and I/O wait
-cpu = true
-
-# Turn on/off security.  Off is currently the default
-#noauth = true
-#auth = true
-
-# Verbose logging output.
-verbose = true
-
-
-EOF
-
-
-# When logging-in, we need to set local
-# This is not required when SlipStream executes the script
-export LC_ALL=C
-
-#starts the server as a daemon
-#mongod --config /etc/mongodb.conf
-service mongodb start
-sleep 5
-
-ss-set isMongoReady true
-
-ss-display "Mongo server is ready to use"
-
-# for each of the nodes, initialize replica set by adding slaves to the primary.
-# The primary is a node with an "id" 1. 
-# it waits until all other instances are propagated until all "ids" have been
-# processed
-
-
-# ::: Recover Mongo info
-MONGO_ID=$(ss-get id)
-
-MONGO_NODENAME=$(ss-get nodename)
-MONGO_IDS=$(ss-get ids)
-
-if [ "$MONGO_ID" = "1" ]
-then
-# gather info from all the other nodes and initialize the replica set
-
-cat &gt; /tmp/replicaInit.js &lt;&lt; 'EOF'
-var statusInit = rs.initiate({_id: "rs0", members: [
-EOF
-
-for i in ${MONGO_IDS//,/ };
-do   
-ss-display "Waiting for ${i}th node: ${MONGO_NODENAME}.${i}:hostname"
-WN_IP=$(ss-get --timeout 360 ${MONGO_NODENAME}.${i}:hostname)
-WN_READINESS=$(ss-get --timeout 600 ${MONGO_NODENAME}.${i}:isMongoReady)
-WN_HOSTNAME=${MONGO_NODENAME}${i}
-
-WN_HOSTNAMES="$WN_HOSTNAMES,$WN_IP"
-
-echo "{_id: ${i}, host: \"${WN_IP}\" }, " &gt;&gt;  /tmp/replicaInit.js
-
-done
-
-#remove last comma
-sed -i '$s/,$//' /tmp/replicaInit.js
-WN_HOSTNAMES=$(echo $WN_HOSTNAMES | sed -e '$s/^,//')
-
-#close the replica definition
-cat &gt;&gt; /tmp/replicaInit.js &lt;&lt; 'EOF'
-]});
-
-
-var s=rs.status();
-
-var numChecks = 0;
-var replicaSetReady = true;
-
-for (i in s.members)
-{
-var rsstate = s.members[i].state;
-switch(rsstate) {
-case 1:
-case 2: //primary or secondary, ok, just leave
-//print("Member "+ s.members[i].name + " is ready and is " + s.members[i].stateStr);
-break;
-case 0:
-case 3:
-case 5: // still initializing or recovering, increase the counter, wait and repeat
-//print("Member "+ s.members[i].name + " is still initializing. Waiting for current status: "+s.members[i].stateStr);
-numChecks++;
-s=rs.status();
-replicaSetReady=false;
-//print("Got replicaSet status...");
-//print("NOTREADY:"+"Member "+ s.members[i].name + " is still initializing. Waiting for current status: "+s.members[i].stateStr)
-
-
-break;
-default:
-//print("ERROR:Severe error found, cannot continue. "+ s.members[i].name + " is :" + s.members[i].stateStr);
-//error, just exit with error
-replicaSetReady = false;
-break;
-}
-}
-//print("config : " + rs.conf());
-if(replicaSetReady)print("READY:!"); else {print("NOTREADY")};
-
-EOF
-
-# create a replica set:
-
-waitForReplicaSet
-sleep 60
-cat &gt;&gt; reconfigureReplica.js &lt;&lt; 'EOF'
-cfg = rs.conf();
-cfg.settings = {};
-cfg.settings.getLastErrorDefaults = {w: "majority"};
-var statusReConfig  = rs.reconfig(cfg);
-EOF
-
-mongo reconfigureReplica.js
-
-waitForReplicaSet
-
-# This comes from the fact Mongo lies about the replica state, it seems..
-ss-display "Ensuring replica set is ready..."
-sleep 90
-
-MONGO_STATUS=$(mongo --quiet --eval "printjson(rs.status())")
-MONGO_REPLICA_STATUS=$(mongo --eval "printjson(rs.conf())")
-ss-display "Mongo status is: $MONGO_STATUS " 
-ss-set replicaSetConf "\"$WN_HOSTNAMES\""
-ss-set isReplicaSetReady true
-ss-display "All set from the Primary node $MONGO_REPLICA_STATUS"
-fi
-
+exit $exit_code
 </target>
                   <target name="onvmadd" />
+                  <target name="report">#!/bin/sh -x
+
+cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
+</target>
+                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
-               <recipe>#!/bin/bash -xe
-
-function ss-display {
-    $(which ss-display) "$1" || echo "$1"
-}
-
-#Initialize pyMongo
-function pymongo_instal(){
-# Install easy_install
-wget https://bitbucket.org/pypa/setuptools/raw/0.7.7/ez_setup.py -O - | python
-# Install python driver for mongo
-/usr/local/bin/easy_install pymongo
-}
-
-
-# create a data filesystem for DB
-ss-display "Updating Ubuntu mirror location"
-cat &gt;&gt; /tmp/mirrors.txt &lt;&lt; 'EOF'
-deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse
-deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted universe multiverse
-deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse
-deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse
-EOF
-
-cat /tmp/mirrors.txt | cat - /etc/apt/sources.list &gt; /tmp/sources.list
-cp -f /tmp/sources.list  /etc/apt/sources.list
-
-#increasing the apt cache size so it works
-echo "APT::Cache-Limit \"50331648\"\;" &gt;&gt;  /etc/apt/apt.conf.d/70debconf 
-
-#install mongo stuff
-apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-
-#Create a /etc/apt/sources.list.d/10gen.list file using the following command.
-
-echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/10gen.list
-
-
-#Install Packages
-#Issue the following command to install the latest stable version of MongoDB:
-echo "Updating repos..."
-apt-get update
-
-
-
-
-#ss-display "Installing XFS tools"
-#apt-get -y install xfsprogs
-
-#ss-display "Getting info about the disk location/name based on the static drive size"
-
-#EXTRA_DISK_SIZE_GB=$(ss-get extra.disk.volatile)
-#EXTRA_DISK_SIZE_BYTES=$(($EXTRA_DISK_SIZE_GB*1024*1024))
-#DATA_PARTITION=$(sfdisk -uM -sdqL 2&gt;/dev/null |  awk -- 'BEGIN { FS=":"} $2 ~ '$EXTRA_DISK_SIZE_BYTES' { print $1;}')
-
-#ss-display "Creating data partitions"
-#parted -s -a optimal -- $DATA_PARTITION mklabel gpt
-#ss-display "Checking if there are any existing partitions and remove them"
-#SPURIOS_PARTITIONS=$(parted -sm $DATA_PARTITION print | awk -- 'BEGIN{FS=":"} $1 ~ /[0-9]+/ {to_rem=to_rem" " $1}END{print to_rem;}')
-#if [[ $SPURIOS_PARTITIONS ]] ; then 
-#parted -s $DATA_PARTITION rm $SPURIOS_PARTITIONS
-#fi
-#parted -s -a optimal -- $DATA_PARTITION  unit compact mkpart  xfs "1" "-1" ;
-#mkfs.xfs -q -f $DATA_PARTITION 
-mkdir -p /data
-#mount $DATA_PARTITION -o nobarrier,noatime,nodiratime,logbsize=262144,logbufs=0,allocsize=64M /data
-
-
-#make some space for packages as the var is very small normally
-ss-display "Moving reposiutory files to the new partition and linking it to /var."
-mv -i /var/cache/apt /data
-ln -s /data/apt /var/cache/apt
-
-
-#ss-display "Setting mongoDB software on a disk $DATA_PARTITION"
-ss-display "Setting mongoDB software on /data"
-
-
-sudo apt-get -y install mongodb-10gen 
-service mongodb stop || true</recipe>
+               <recipe />
                <cloudImageIdentifiers />
                <parameters>
                   <entry>
@@ -341,8 +317,11 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>isMongoReady</string>
-                     <parameter category="Output" description="MongoDB ready to serve data?" isSet="false" mandatory="false" name="isMongoReady" order="0" order_="0" readonly="false" type="String" />
+                     <string>slipstream_client_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_client_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
@@ -386,6 +365,13 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>slipstream_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-sa-east-1.security.groups</string>
                      <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
                         <value>default</value>
@@ -401,6 +387,20 @@ service mongodb stop || true</recipe>
                         </enumValues>
                         <value>Public</value>
                         <defaultValue>Public</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>slipstream_server_deps_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_deps_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>slipstream_ui_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -456,6 +456,13 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>slipstream_server_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
                      <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
                         <value>default</value>
@@ -502,10 +509,6 @@ service mongodb stop || true</recipe>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
-                  </entry>
-                  <entry>
-                     <string>replicaSetConf</string>
-                     <parameter category="Output" description="List of replica hostnames" isSet="false" mandatory="false" name="replicaSetConf" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-west.instance.type</string>
@@ -606,8 +609,15 @@ service mongodb stop || true</recipe>
                   <entry>
                      <string>exoscale-ch-gva.instance.type</string>
                      <parameter category="exoscale-ch-gva" description="Instance type (flavor)" isSet="true" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="String">
-                        <value>Micro</value>
-                        <defaultValue>Micro</defaultValue>
+                        <value>Medium</value>
+                        <defaultValue>Medium</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>install_examples</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="install_examples" order="0" order_="0" readonly="false" type="String">
+                        <value>true</value>
+                        <defaultValue>true</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -711,8 +721,11 @@ service mongodb stop || true</recipe>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
-                     <string>isReplicaSetReady</string>
-                     <parameter category="Output" description="MongoDB replica set ready?" isSet="false" mandatory="false" name="isReplicaSetReady" order="0" order_="0" readonly="false" type="String" />
+                     <string>slipstream_connectors_version</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
+                        <value>master</value>
+                        <defaultValue>master</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>instanceid</string>
@@ -785,6 +798,13 @@ service mongodb stop || true</recipe>
                      <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
                         <value>default</value>
                         <defaultValue>default</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>skip_tests</string>
+                     <parameter category="Input" description="" isSet="true" mandatory="false" name="skip_tests" order="0" order_="0" readonly="false" type="String">
+                        <value>true</value>
+                        <defaultValue>true</defaultValue>
                      </parameter>
                   </entry>
                   <entry>

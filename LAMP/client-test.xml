@@ -8,11 +8,10 @@
    </commit>
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="report" />
-      <target name="onvmremove" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/sh -xe
 
 
@@ -40,7 +39,7 @@ ss-display "Reading from $apacheserverip"
 read=$(curl http://$apacheserverip:80/mongoRead.php | grep -v "^&lt;")
 ss-display "$read from $apacheserverip"
 </target>
-      <target name="onvmadd" />
+      <target name="onvmremove" />
    </targets>
    <packages />
    <prerecipe />

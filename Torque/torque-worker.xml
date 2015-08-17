@@ -49,9 +49,9 @@ ssh-keyscan $MASTER_HOSTNAME &gt;&gt; /home/tuser/.ssh/known_hosts
 ss-display 'Ready'
 
 </target>
-      <target name="report" />
-      <target name="onvmremove" />
       <target name="onvmadd" />
+      <target name="onvmremove" />
+      <target name="report" />
    </targets>
    <packages>
       <package name="munge" />

@@ -10,8 +10,8 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="report" />
       <target name="onvmremove" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -x
 
 #
@@ -25,7 +25,7 @@ yum -y install docker-io
 # 
 docker -H tcp://0.0.0.0:2375 -d &amp;
 ss-display "Node Ready"</target>
-      <target name="onvmadd" />
+      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

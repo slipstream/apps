@@ -16,7 +16,6 @@
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/slave" maxProvisioningFailures="0" multiplicity="1" name="slave" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
             <image category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:45.729 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/slave" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="1716">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
@@ -33,8 +32,6 @@
                   <comment>First version of this image</comment>
                </commit>
                <targets>
-                  <target name="report" />
-                  <target name="onvmremove" />
                   <target name="execute">#!/bin/bash -x
 
 
@@ -260,6 +257,8 @@ ss-set url.ssh "${url_ssh}"
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Hadoop install ...'</target>
                   <target name="onvmadd" />
+                  <target name="report" />
+                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -764,6 +763,7 @@ ss-set statecustom 'Hadoop install ...'</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -785,7 +785,6 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
             <image category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:32:47.749 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/ambari" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="1714">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
@@ -997,6 +996,180 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 
 fi
 
+
+
+ss-display "${cluster_name} Ready"
+</target>
+                  <target name="onvmremove">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+
+    ss-display "Removing slave ..."
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+
+
+
+        ss-display "Stop slave components"
+        #STOP all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 120
+
+
+
+        ss-display "Delete slave components"
+        #DELETE all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+       sleep 20
+
+
+
+        ss-display "Delete the slave"
+        #DELETE the host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+        sleep 5
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+    done
+
+
+fi
 
 
 ss-display "${cluster_name} Ready"
@@ -1518,180 +1691,6 @@ ss-set ss:url.service ${url}
 ss-set url.service ${url}
 
 ss-set statecustom "${cluster_name} Ready"</target>
-                  <target name="onvmremove">#!/bin/bash
-set -e
-
-
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
-
-
-
-    ss-display "Removing slave ..."
-    cluster_name=`ss-get HDP_Cluster_Name`
-    master_hostname=`ss-get  master.1:node_hostname`
-
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-
-        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
-
-
-
-        ss-display "Stop slave components"
-        #STOP all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 120
-
-
-
-        ss-display "Delete slave components"
-        #DELETE all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-       sleep 20
-
-
-
-        ss-display "Delete the slave"
-        #DELETE the host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
-        sleep 5
-
-
-
-        #Restart Ganglia_Server (Ganglia:  metrics)
-
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Ganglia Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"GANGLIA",
-         "component_name":"GANGLIA_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-          #Restart NameNode (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Secondary NameNode  (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Secondary NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"SECONDARY_NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-        #Restart Resource_Manager (YARN)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Resource Manager",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"YARN",
-         "component_name":"RESOURCEMANAGER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Zookeeper Server (Zookeeper: coordinator)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Zookeeper Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"ZOOKEEPER",
-         "component_name":"ZOOKEEPER_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-    done
-
-
-fi
-
-
-ss-display "${cluster_name} Ready"
-</target>
                   <target name="report" />
                </targets>
                <packages />
@@ -2216,6 +2215,7 @@ ss-display "${cluster_name} Ready"
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -2223,8 +2223,7 @@ ss-display "${cluster_name} Ready"
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/master" maxProvisioningFailures="0" multiplicity="1" name="master" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
-            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:00.878 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1715">
+            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-08-12 00:16:05.792 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1871">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -2236,13 +2235,12 @@ ss-display "${cluster_name} Ready"
                      <string>stef</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>First version of this image</comment>
+               <commit author="anis">
+                  <comment>Update hadoop_progress section</comment>
                </commit>
                <targets>
                   <target name="onvmremove" />
                   <target name="onvmadd" />
-                  <target name="report" />
                   <target name="execute">#!/bin/bash -x
 
 
@@ -2264,6 +2262,8 @@ yum -y clean all
 
 #get dns_domain from ambari server
 dns_domain=`ss-get --timeout 480 hadoop_installer.1:dns_domain`
+
+
 
 
 #Set &amp; Send Hostname (DNS) to hadoop ambari server
@@ -2511,64 +2511,79 @@ iptables -I INPUT 4 -j ACCEPT -p tcp --dport 5900:5902
 ss-set statecustom 'VNC server Ready!'
 
 
+#*************************************************************************************************************************************
 
+#install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
+
+#ss-set statecustom 'Hadoop install ... '
+#while [ "$install_progress" != '100.' ]
+#do
+#sleep 10   
+#install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
+#ss-set statecustom "In progress: ${install_progress} %"
+#done
+
+
+installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
+
+ss-set statecustom "${installer_state}"
+sleep 10
+
+
+ss-set statecustom "${Hadoop install ... }"
+while [ "$installer_state" != 'true' ]
+do
+sleep 10   
+installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
+done
 
 
 
 #*************************************************Install SlipStream-client ***********************************************************
 
 
-#install pip
-yum install -y python-pip
+##install pip
+#yum install -y python-pip
 
 
-#install slipstream-client
-pip install slipstream-client
+##install slipstream-client
+#pip install slipstream-client
 
 
-#install httplib2
-pip install httplib2
+##install httplib2
+#pip install httplib2
 
 
 #cmd to add a new slave
-mkdir /root/hadoop-examples
-cd /root/hadoop-examples
-touch add-slave
-touch remove-slave
+#mkdir /root/hadoop-examples
+#cd /root/hadoop-examples
+#touch add-slave
+#touch remove-slave
 
 
-#get run_id
-run_id=`cat /tmp/slipstream.context | grep diid | grep -Po '[^ ]+$'`
+##get run_id
+#run_id=`cat /tmp/slipstream.context | grep diid | grep -Po '[^ ]+$'`
 
-cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/add-slave
-#!/bin/sh
-read -p "Enter slave number to add : " slave_nb
-ss-node-add $run_id slave $slave_nb
-EOF
+#cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/add-slave
+# #!/bin/sh
+#read -p "Enter slave number to add : " slave_nb
+#ss-node-add $run_id slave $slave_nb
+#EOF
 
 
-cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/remove-slave
-#!/bin/sh
-read -p "Enter slave_id to remove: " slave_id
-ss-node-remove $run_id slave $slave_id
-EOF
+#cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/remove-slave
+# #!/bin/sh
+#read -p "Enter slave_id to remove: " slave_id
+#ss-node-remove $run_id slave $slave_id
+#EOF
 
-chmod +x /root/hadoop-examples/add-slave
-chmod +x /root/hadoop-examples/remove-slave
+#chmod +x /root/hadoop-examples/add-slave
+#chmod +x /root/hadoop-examples/remove-slave
 
 
 #**********************************************  Fix Bug on hadoop installation *****************************************************
 
 
-install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
-
-ss-set statecustom 'Hadoop install ...'
-while [ "$install_progress" != '100.' ]
-do
-sleep 10   
-install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
-ss-set statecustom "In progress: ${install_progress} %"
-done
 
 
 #After all installation &amp; configuration we will Fix bug on hadoop
@@ -2620,6 +2635,7 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Master node Ready!'</target>
+                  <target name="report" />
                </targets>
                <packages />
                <prerecipe />
@@ -3128,6 +3144,7 @@ ss-set statecustom 'Master node Ready!'</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>

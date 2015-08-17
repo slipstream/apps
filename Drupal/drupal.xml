@@ -9,10 +9,11 @@
    <published publicationDate="2015-07-01 22:44:07.284 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="onvmadd" />
+      <target name="onvmremove" />
+      <target name="report" />
       <target name="execute">#!/usr/bin/env bash
 
 # Fail fast and fail hard.
@@ -84,8 +85,6 @@ ss-set ss:url.service http://${hostname}/drupal
 
 ss-display "Drupal is ready to go!"
 </target>
-      <target name="onvmremove" />
-      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

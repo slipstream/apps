@@ -10,7 +10,8 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmremove" />
+      <target name="report" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -xe
 
 
@@ -146,8 +147,7 @@ ss-set ss:url.service $URL
 
 ss-set ready true
 </target>
-      <target name="onvmadd" />
-      <target name="report" />
+      <target name="onvmremove" />
    </targets>
    <packages />
    <prerecipe />

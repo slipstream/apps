@@ -234,9 +234,9 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Hadoop install ...'</target>
+      <target name="onvmremove" />
       <target name="onvmadd" />
       <target name="report" />
-      <target name="onvmremove" />
    </targets>
    <packages />
    <prerecipe />

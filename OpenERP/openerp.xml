@@ -9,10 +9,10 @@
    <published publicationDate="2015-07-01 23:25:35.826 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="onvmadd" />
+      <target name="report" />
       <target name="execute">#!/usr/bin/env bash
 # WARNING:
 #
@@ -30,7 +30,6 @@ ss-set url.service ${url}
 ss-display "OpenERP ready!"
 
 </target>
-      <target name="report" />
       <target name="onvmremove" />
    </targets>
    <packages>

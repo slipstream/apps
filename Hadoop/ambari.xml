@@ -527,6 +527,7 @@ ss-set ss:url.service ${url}
 ss-set url.service ${url}
 
 ss-set statecustom "${cluster_name} Ready"</target>
+      <target name="report" />
       <target name="onvmremove">#!/bin/bash
 set -e
 
@@ -900,7 +901,6 @@ fi
 
 ss-display "${cluster_name} Ready"
 </target>
-      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

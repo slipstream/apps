@@ -9,11 +9,9 @@
    <published publicationDate="2015-07-01 22:44:59.135 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="onvmadd" />
-      <target name="report" />
       <target name="execute">#!/bin/bash
 
 #
@@ -86,6 +84,7 @@ ss-set ss:url.service "http://${hname}/"
 #
 ss-set statecustom 'Galaxy Ready!'
 </target>
+      <target name="report" />
       <target name="onvmremove" />
    </targets>
    <packages />

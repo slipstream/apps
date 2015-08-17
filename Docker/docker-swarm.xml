@@ -10,6 +10,7 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report" />
       <target name="onvmremove">#!/bin/bash
 set -e
 
@@ -28,7 +29,6 @@ fi
 
 
 ss-display "Docker Ready!"</target>
-      <target name="report" />
       <target name="execute">#!/bin/bash -x
 
 hostname docker_manager

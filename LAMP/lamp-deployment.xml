@@ -9,7 +9,7 @@
    <published publicationDate="2015-07-01 22:38:05.593 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="2" limit="20" offset="0" totalCount="2">
+   <runs count="3" limit="20" offset="0" totalCount="3">
       </runs>
    <nodes>
       <entry>
@@ -43,7 +43,6 @@
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
             <image category="Image" creation="2014-06-16 11:19:42.517 UTC" deleted="false" description="Apache2/PHP layer. Includes a simple read/write app running on port 80" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:23.351 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/php.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/apache-php" parentUri="module/apps/LAMP" platform="ubuntu" shortName="apache-php" version="1756">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
@@ -61,8 +60,8 @@
                </commit>
                <targets>
                   <target name="report" />
-                  <target name="onvmremove" />
                   <target name="onvmadd" />
+                  <target name="onvmremove" />
                   <target name="execute">#!/bin/sh -xe
 
 
@@ -691,6 +690,7 @@ yes '' | pecl install -f mongo</recipe>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -712,7 +712,6 @@ yes '' | pecl install -f mongo</recipe>
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
             <image category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:29.149 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/haproxy" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="1757">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
@@ -731,7 +730,6 @@ yes '' | pecl install -f mongo</recipe>
                <targets>
                   <target name="onvmremove" />
                   <target name="onvmadd" />
-                  <target name="report" />
                   <target name="execute">#!/bin/bash -xe
 
 
@@ -867,6 +865,7 @@ ss-set ss:url.service $URL
 
 ss-set ready true
 </target>
+                  <target name="report" />
                </targets>
                <packages />
                <prerecipe />
@@ -1413,6 +1412,7 @@ apt-get -y install haproxy
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -1420,7 +1420,6 @@ apt-get -y install haproxy
          <node cloudService="default" creation="2015-07-01 16:50:22.281 UTC" deleted="false" imageUri="module/apps/MongoDB/mongodb" maxProvisioningFailures="0" multiplicity="3" name="db" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
             <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:34.961 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="1758">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
@@ -1438,6 +1437,8 @@ apt-get -y install haproxy
                </commit>
                <targets>
                   <target name="onvmremove" />
+                  <target name="report" />
+                  <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -xe
 
 
@@ -1651,8 +1652,6 @@ ss-display "All set from the Primary node $MONGO_REPLICA_STATUS"
 fi
 
 </target>
-                  <target name="report" />
-                  <target name="onvmadd" />
                </targets>
                <packages />
                <prerecipe />
@@ -2236,6 +2235,7 @@ service mongodb stop || true</recipe>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>

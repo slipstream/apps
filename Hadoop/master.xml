@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:00.878 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1715">
+<imageModule category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-08-12 00:16:05.792 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1871">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -10,8 +10,9 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="report" />
       <target name="onvmremove" />
+      <target name="report" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -x
 
 
@@ -33,6 +34,8 @@ yum -y clean all
 
 #get dns_domain from ambari server
 dns_domain=`ss-get --timeout 480 hadoop_installer.1:dns_domain`
+
+
 
 
 #Set &amp; Send Hostname (DNS) to hadoop ambari server
@@ -280,64 +283,79 @@ iptables -I INPUT 4 -j ACCEPT -p tcp --dport 5900:5902
 ss-set statecustom 'VNC server Ready!'
 
 
+#*************************************************************************************************************************************
 
+#install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
+
+#ss-set statecustom 'Hadoop install ... '
+#while [ "$install_progress" != '100.' ]
+#do
+#sleep 10   
+#install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
+#ss-set statecustom "In progress: ${install_progress} %"
+#done
+
+
+installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
+
+ss-set statecustom "${installer_state}"
+sleep 10
+
+
+ss-set statecustom "${Hadoop install ... }"
+while [ "$installer_state" != 'true' ]
+do
+sleep 10   
+installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
+done
 
 
 
 #*************************************************Install SlipStream-client ***********************************************************
 
 
-#install pip
-yum install -y python-pip
+##install pip
+#yum install -y python-pip
 
 
-#install slipstream-client
-pip install slipstream-client
+##install slipstream-client
+#pip install slipstream-client
 
 
-#install httplib2
-pip install httplib2
+##install httplib2
+#pip install httplib2
 
 
 #cmd to add a new slave
-mkdir /root/hadoop-examples
-cd /root/hadoop-examples
-touch add-slave
-touch remove-slave
+#mkdir /root/hadoop-examples
+#cd /root/hadoop-examples
+#touch add-slave
+#touch remove-slave
 
 
-#get run_id
-run_id=`cat /tmp/slipstream.context | grep diid | grep -Po '[^ ]+$'`
+##get run_id
+#run_id=`cat /tmp/slipstream.context | grep diid | grep -Po '[^ ]+$'`
 
-cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/add-slave
-#!/bin/sh
-read -p "Enter slave number to add : " slave_nb
-ss-node-add $run_id slave $slave_nb
-EOF
+#cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/add-slave
+# #!/bin/sh
+#read -p "Enter slave number to add : " slave_nb
+#ss-node-add $run_id slave $slave_nb
+#EOF
 
 
-cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/remove-slave
-#!/bin/sh
-read -p "Enter slave_id to remove: " slave_id
-ss-node-remove $run_id slave $slave_id
-EOF
+#cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/remove-slave
+# #!/bin/sh
+#read -p "Enter slave_id to remove: " slave_id
+#ss-node-remove $run_id slave $slave_id
+#EOF
 
-chmod +x /root/hadoop-examples/add-slave
-chmod +x /root/hadoop-examples/remove-slave
+#chmod +x /root/hadoop-examples/add-slave
+#chmod +x /root/hadoop-examples/remove-slave
 
 
 #**********************************************  Fix Bug on hadoop installation *****************************************************
 
 
-install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
-
-ss-set statecustom 'Hadoop install ...'
-while [ "$install_progress" != '100.' ]
-do
-sleep 10   
-install_progress=`ss-get --timeout 480 hadoop_installer.1:Hadoop_install_progress`
-ss-set statecustom "In progress: ${install_progress} %"
-done
 
 
 #After all installation &amp; configuration we will Fix bug on hadoop
@@ -389,7 +407,6 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Master node Ready!'</target>
-      <target name="onvmadd" />
    </targets>
    <packages />
    <prerecipe />

@@ -9,11 +9,11 @@
    <published publicationDate="2015-07-01 23:18:30.150 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
+   <runs count="2" limit="20" offset="0" totalCount="2">
       </runs>
    <targets>
-      <target name="onvmadd" />
       <target name="onvmremove" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -x
 
 export admin_username=admin

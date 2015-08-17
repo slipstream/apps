@@ -11,6 +11,8 @@
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="onvmadd" />
+      <target name="onvmremove" />
+      <target name="report" />
       <target name="execute">#!/bin/bash -xe
 
 function get-hostname {
@@ -89,8 +91,6 @@ ss-set ssh_key_rsa_b64 $(cat /home/tuser/.ssh/id_rsa | base64 --wrap 0)
 ss-display 'Ready'
 
 </target>
-      <target name="onvmremove" />
-      <target name="report" />
    </targets>
    <packages>
       <package name="munge" />

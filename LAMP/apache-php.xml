@@ -10,8 +10,7 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmremove" />
-      <target name="onvmadd" />
+      <target name="report" />
       <target name="execute">#!/bin/sh -xe
 
 
@@ -100,7 +99,8 @@ URL=http://$(ss-get hostname)
 ss-set url.service $URL
 ss-display "ApachePHP ready"
 </target>
-      <target name="report" />
+      <target name="onvmremove" />
+      <target name="onvmadd" />
    </targets>
    <packages />
    <prerecipe />

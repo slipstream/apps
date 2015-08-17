@@ -9,8 +9,7 @@
    <published publicationDate="2015-07-02 13:24:57.211 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="2" limit="20" offset="0" totalCount="2">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="onvmadd" />
       <target name="report" />

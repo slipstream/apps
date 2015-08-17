@@ -10,6 +10,8 @@
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="onvmadd" />
+      <target name="onvmremove" />
       <target name="report" />
       <target name="execute">#!/bin/bash -xe
 
@@ -224,8 +226,6 @@ ss-display "All set from the Primary node $MONGO_REPLICA_STATUS"
 fi
 
 </target>
-      <target name="onvmremove" />
-      <target name="onvmadd" />
    </targets>
    <packages />
    <prerecipe />

@@ -9,12 +9,9 @@
    <published publicationDate="2015-07-01 22:37:46.556 UTC" />
    <cloudNames length="12">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="report" />
-      <target name="onvmremove" />
-      <target name="onvmadd" />
       <target name="execute">#!/usr/bin/env bash
 
 # Fail fast and fail hard.
@@ -61,6 +58,8 @@ ss-display "Minecraft server is ready to go!"
 
 
 </target>
+      <target name="onvmremove" />
+      <target name="onvmadd" />
    </targets>
    <packages>
       <package name="puppet" />
