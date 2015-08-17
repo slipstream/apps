@@ -13,7 +13,9 @@ See [LICENSE](LICENSE) for more details.
 To fetch the current version of the apps from
 [Nuvla&trade;](http://nuv.la), clone this repository and then execute
 the following script into the directory corresponding to this
-repository you've just cloned: ```bash #!/bin/env bash -x
+repository you've just cloned:
+
+```bash #!/bin/env bash -x
 
 pushd ../
 ss-module-download -u <username> -p <password> \
@@ -34,6 +36,7 @@ popd
 
 To push these apps to your SlipStream instance, execute the following
 script in a linux machine:
+
 ```bash
 #!/bin/env bash -x
 
