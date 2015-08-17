@@ -15,7 +15,8 @@ To fetch the current version of the apps from
 the following script into the directory corresponding to this
 repository you've just cloned:
 
-```bash #!/bin/env bash -x
+```bash
+#!/bin/env bash -x
 
 pushd ../
 ss-module-download -u <username> -p <password> \
