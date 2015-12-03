@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2013-11-16 07:39:51.627 UTC" deleted="false" description="RStudio analysis server" isBase="false" isLatestVersion="true" lastModified="2015-07-01 23:08:20.428 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/rstudio.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/RStudio" platform="ubuntu" shortName="rstudio" version="1742">
+<imageModule category="Image" creation="2013-11-16 07:39:51.627 UTC" deleted="false" description="RStudio analysis server" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:11:20.446 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/rstudio.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/RStudio" platform="ubuntu" shortName="rstudio" version="2095">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,14 +6,12 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <published publicationDate="2015-07-01 23:08:20.428 UTC" />
-   <cloudNames length="12">
+   <published publicationDate="2015-11-20 12:11:20.446 UTC" />
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmremove" />
       <target name="report" />
-      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -x
 
 #
@@ -55,6 +53,8 @@ ss-set url.service ${url}
 # set the customstate to inform user that everything's ready
 #
 ss-set statecustom 'RStudio Ready!'</target>
+      <target name="onvmadd" />
+      <target name="onvmremove" />
    </targets>
    <packages>
       <package name="libapparmor1" />

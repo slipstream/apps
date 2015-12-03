@@ -6,7 +6,7 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <children>
@@ -15,12 +15,12 @@
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="Torque master node" name="torque-master" version="1798">
+      <item category="Image" description="Torque master node" name="torque-master" version="2130">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="Torque worker node" name="torque-worker" version="1800">
+      <item category="Image" description="Torque worker node" name="torque-worker" version="2129">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
             <groupMembers />
          </authz>

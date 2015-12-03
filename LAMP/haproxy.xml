@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:29.149 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="1757">
+<imageModule category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-11-19 09:10:29.486 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="2092">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,11 +6,11 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="report" />
+      <target name="onvmremove" />
       <target name="onvmadd" />
       <target name="execute">#!/bin/bash -xe
 
@@ -147,7 +147,7 @@ ss-set ss:url.service $URL
 
 ss-set ready true
 </target>
-      <target name="onvmremove" />
+      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

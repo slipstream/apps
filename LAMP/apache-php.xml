@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-06-16 11:19:42.517 UTC" deleted="false" description="Apache2/PHP layer. Includes a simple read/write app running on port 80" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:23.351 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/php.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="apache-php" version="1756">
+<imageModule category="Image" creation="2014-06-16 11:19:42.517 UTC" deleted="false" description="Apache2/PHP layer. Includes a simple read/write app running on port 80" isBase="false" isLatestVersion="true" lastModified="2015-11-19 09:08:51.228 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/php.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="apache-php" version="2090">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,11 +6,12 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="report" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/sh -xe
 
 
@@ -100,7 +101,6 @@ ss-set url.service $URL
 ss-display "ApachePHP ready"
 </target>
       <target name="onvmremove" />
-      <target name="onvmadd" />
    </targets>
    <packages />
    <prerecipe />

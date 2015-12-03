@@ -7,9 +7,9 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-01 22:38:05.593 UTC" />
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
-   <runs count="3" limit="20" offset="0" totalCount="3">
+   <runs count="2" limit="20" offset="0" totalCount="2">
       </runs>
    <nodes>
       <entry>
@@ -43,7 +43,8 @@
                   </parameter>
                </entry>
             </parameters>
-            <image category="Image" creation="2014-06-16 11:19:42.517 UTC" deleted="false" description="Apache2/PHP layer. Includes a simple read/write app running on port 80" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:23.351 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/php.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/apache-php" parentUri="module/apps/LAMP" platform="ubuntu" shortName="apache-php" version="1756">
+            <notes length="0" />
+            <image category="Image" creation="2014-06-16 11:19:42.517 UTC" deleted="false" description="Apache2/PHP layer. Includes a simple read/write app running on port 80" isBase="false" isLatestVersion="true" lastModified="2015-11-19 09:08:51.228 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/php.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/apache-php" parentUri="module/apps/LAMP" platform="ubuntu" shortName="apache-php" version="2090">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -53,15 +54,14 @@
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="lionel">
-                  <comment>Added the function ss-display into Image Creation Recipes</comment>
+               <commit author="super">
+                  <comment>downgrade to ubuntu 12.04</comment>
                </commit>
                <targets>
-                  <target name="report" />
                   <target name="onvmadd" />
-                  <target name="onvmremove" />
                   <target name="execute">#!/bin/sh -xe
 
 
@@ -150,6 +150,8 @@ URL=http://$(ss-get hostname)
 ss-set url.service $URL
 ss-display "ApachePHP ready"
 </target>
+                  <target name="report" />
+                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -197,9 +199,13 @@ yes '' | pecl install -f mongo</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -232,6 +238,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -239,9 +255,10 @@ yes '' | pecl install -f mongo</recipe>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -256,15 +273,34 @@ yes '' | pecl install -f mongo</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>hostname</string>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>ready</string>
@@ -273,7 +309,7 @@ yes '' | pecl install -f mongo</recipe>
                   <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -306,22 +342,37 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -354,19 +405,37 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>replicaSetConf</string>
                      <parameter category="Input" description="Database cluster configuration" isSet="false" mandatory="false" name="replicaSetConf" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -399,22 +468,49 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -447,6 +543,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -454,9 +560,10 @@ yes '' | pecl install -f mongo</recipe>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -469,7 +576,7 @@ yes '' | pecl install -f mongo</recipe>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -502,6 +609,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -510,14 +627,15 @@ yes '' | pecl install -f mongo</recipe>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -550,6 +668,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -557,9 +685,10 @@ yes '' | pecl install -f mongo</recipe>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -567,6 +696,17 @@ yes '' | pecl install -f mongo</recipe>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="true" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String">
                         <value>5</value>
                         <defaultValue>5</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -579,15 +719,32 @@ yes '' | pecl install -f mongo</recipe>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -620,6 +777,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -627,29 +794,32 @@ yes '' | pecl install -f mongo</recipe>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -682,6 +852,16 @@ yes '' | pecl install -f mongo</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -690,7 +870,6 @@ yes '' | pecl install -f mongo</recipe>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -712,7 +891,8 @@ yes '' | pecl install -f mongo</recipe>
                   </parameter>
                </entry>
             </parameters>
-            <image category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:29.149 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/haproxy" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="1757">
+            <notes length="0" />
+            <image category="Image" creation="2014-06-16 11:16:46.441 UTC" deleted="false" description="HAProxy configured for load balancing (no HA setup)" isBase="false" isLatestVersion="true" lastModified="2015-11-19 09:10:29.486 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/haproxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/LAMP/haproxy" parentUri="module/apps/LAMP" platform="ubuntu" shortName="haproxy" version="2092">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -722,14 +902,15 @@ yes '' | pecl install -f mongo</recipe>
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="lionel">
-                  <comment>Added the function ss-display into Image Creation Recipes</comment>
+               <commit author="super">
+                  <comment>downgrade to ubuntu 12.04</comment>
                </commit>
                <targets>
                   <target name="onvmremove" />
-                  <target name="onvmadd" />
+                  <target name="report" />
                   <target name="execute">#!/bin/bash -xe
 
 
@@ -865,7 +1046,7 @@ ss-set ss:url.service $URL
 
 ss-set ready true
 </target>
-                  <target name="report" />
+                  <target name="onvmadd" />
                </targets>
                <packages />
                <prerecipe />
@@ -926,9 +1107,13 @@ apt-get -y install haproxy
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -961,6 +1146,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -968,9 +1163,10 @@ apt-get -y install haproxy
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -985,15 +1181,34 @@ apt-get -y install haproxy
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>hostname</string>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>web_nodename</string>
@@ -1006,7 +1221,7 @@ apt-get -y install haproxy
                   <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1039,22 +1254,37 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1087,15 +1317,33 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1128,22 +1376,49 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1176,6 +1451,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1183,9 +1468,10 @@ apt-get -y install haproxy
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1198,7 +1484,7 @@ apt-get -y install haproxy
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1231,6 +1517,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1239,14 +1535,15 @@ apt-get -y install haproxy
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1279,6 +1576,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1286,9 +1593,10 @@ apt-get -y install haproxy
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1296,20 +1604,48 @@ apt-get -y install haproxy
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1342,6 +1678,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1349,29 +1695,32 @@ apt-get -y install haproxy
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1404,6 +1753,16 @@ apt-get -y install haproxy
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1412,7 +1771,6 @@ apt-get -y install haproxy
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -1420,7 +1778,8 @@ apt-get -y install haproxy
          <node cloudService="default" creation="2015-07-01 16:50:22.281 UTC" deleted="false" imageUri="module/apps/MongoDB/mongodb" maxProvisioningFailures="0" multiplicity="3" name="db" network="Public">
             <parameterMappings />
             <parameters />
-            <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:34.961 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="1758">
+            <notes length="0" />
+            <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:51:31.366 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="2132">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -1430,15 +1789,16 @@ apt-get -y install haproxy
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="lionel">
-                  <comment>Added the function ss-display into Image Creation Recipes</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmremove" />
                   <target name="report" />
                   <target name="onvmadd" />
+                  <target name="onvmremove" />
                   <target name="execute">#!/bin/bash -xe
 
 
@@ -1749,9 +2109,13 @@ service mongodb stop || true</recipe>
                      <parameter category="Output" description="MongoDB ready to serve data?" isSet="false" mandatory="false" name="isMongoReady" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1784,6 +2148,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1791,9 +2165,10 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1808,10 +2183,18 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1819,9 +2202,20 @@ service mongodb stop || true</recipe>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1854,22 +2248,37 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1902,19 +2311,37 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>replicaSetConf</string>
                      <parameter category="Output" description="List of replica hostnames" isSet="false" mandatory="false" name="replicaSetConf" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1947,22 +2374,49 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1995,6 +2449,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2002,9 +2466,10 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -2017,7 +2482,7 @@ service mongodb stop || true</recipe>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2050,6 +2515,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2058,14 +2533,15 @@ service mongodb stop || true</recipe>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2098,6 +2574,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2105,14 +2591,26 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>extra.disk.volatile</string>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>isReplicaSetReady</string>
@@ -2124,15 +2622,32 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2165,6 +2680,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2172,29 +2697,32 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2227,6 +2755,16 @@ service mongodb stop || true</recipe>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2235,7 +2773,6 @@ service mongodb stop || true</recipe>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
    </nodes>

@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-08-17 13:03:54.196 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="1875">
+<imageModule category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:12.401 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="2128">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,10 +6,14 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report">#!/bin/sh -x
+
+cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
+</target>
       <target name="execute">#!/bin/bash -x
 
 # fail quickly on any error
@@ -23,7 +27,7 @@ slipstream_server_deps_version=`ss-get slipstream_server_deps_version`
 slipstream_ui_version=`ss-get slipstream_ui_version`
 skip_tests=`ss-get skip_tests`
 install_examples=`ss-get install_examples`
-
+slipstream_backend=`ss-get slipstream_backend`
 
 #
 # upgrade system
@@ -133,7 +137,7 @@ tar zxf ~/SlipStreamBootstrap/SlipStream/yum/target/SlipStream*.tar.gz
 #
 ss-set statecustom "Installing SlipStream..."
 export SLIPSTREAM_EXAMPLES=${install_examples}
-curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream-install.sh | bash -s community local
+curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream.sh | bash -s -- -d $slipstream_backend -e community -k local
 
 #
 # restarting services (probably not necessary)
@@ -179,10 +183,6 @@ done
 exit $exit_code
 </target>
       <target name="onvmremove" />
-      <target name="report">#!/bin/sh -x
-
-cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
-</target>
       <target name="onvmadd" />
    </targets>
    <packages />
@@ -238,6 +238,13 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
          <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
             <value>master</value>
             <defaultValue>master</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>slipstream_backend</string>
+         <parameter category="Input" description="RDBMS - hsqldb or postgresql" isSet="true" mandatory="false" name="slipstream_backend" order="0" order_="0" readonly="false" type="String">
+            <value>hsqldb</value>
+            <defaultValue>hsqldb</defaultValue>
          </parameter>
       </entry>
       <entry>

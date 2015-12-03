@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-07-02 22:39:37.381 UTC" deleted="false" description="SlipStream community edition" isBase="false" isLatestVersion="true" lastModified="2015-07-24 08:45:03.677 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream" version="1860">
+<imageModule category="Image" creation="2015-07-02 22:39:37.381 UTC" deleted="false" description="SlipStream community edition" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:10:56.756 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream" version="2126">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,10 +6,26 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <published publicationDate="2015-11-20 12:10:56.756 UTC" />
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report">#!/usr/bin/env bash
+
+set -x
+set -e
+set -o pipefail
+
+cp /tmp/slipstream-install.log $SLIPSTREAM_REPORT_DIR
+cp /opt/slipstream/server/logs/* $SLIPSTREAM_REPORT_DIR
+cp /tmp/slipstream-connectors-install.log $SLIPSTREAM_REPORT_DIR
+
+ss-display 'SlipStream is Ready!'
+
+</target>
+      <target name="onvmadd" />
+      <target name="onvmremove" />
       <target name="execute">#!/usr/bin/env bash
 
 set -x
@@ -28,21 +44,6 @@ curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/instal
 url="https://$(ss-get hostname)"
 ss-set ss:url.service ${url}
 ss-set url.service ${url}
-
-ss-display 'SlipStream is Ready!'
-
-</target>
-      <target name="onvmremove" />
-      <target name="onvmadd" />
-      <target name="report">#!/usr/bin/env bash
-
-set -x
-set -e
-set -o pipefail
-
-cp /tmp/slipstream-install.log $SLIPSTREAM_REPORT_DIR
-cp /opt/slipstream/server/logs/* $SLIPSTREAM_REPORT_DIR
-cp /tmp/slipstream-connectors-install.log $SLIPSTREAM_REPORT_DIR
 
 ss-display 'SlipStream is Ready!'
 

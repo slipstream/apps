@@ -6,11 +6,11 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <children>
-      <item category="Image" description="Ambari server used to install and manage the Hadoop cluster" name="ambari" version="1714">
+      <item category="Image" description="Ambari server used to install and manage the Hadoop cluster" name="ambari" version="2136">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
             <groupMembers />
          </authz>
@@ -20,12 +20,12 @@
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="Hadoop master node" name="master" version="1871">
+      <item category="Image" description="Hadoop master node" name="master" version="2134">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="Hadoop slave node" name="slave" version="1716">
+      <item category="Image" description="Hadoop slave node" name="slave" version="2135">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
             <groupMembers />
          </authz>

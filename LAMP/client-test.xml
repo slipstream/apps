@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-06-16 18:54:48.224 UTC" deleted="false" description="Simple test client checking correct lamp deployment" isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:08.508 UTC" loginUser="ubuntu" logoLink="" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="client-test" version="1755">
+<imageModule category="Image" creation="2014-06-16 18:54:48.224 UTC" deleted="false" description="Simple test client checking correct lamp deployment" isBase="false" isLatestVersion="true" lastModified="2015-11-19 09:09:45.651 UTC" loginUser="ubuntu" logoLink="" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/LAMP" platform="ubuntu" shortName="client-test" version="2091">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,12 +6,11 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="report" />
-      <target name="onvmadd" />
       <target name="execute">#!/bin/sh -xe
 
 
@@ -40,6 +39,7 @@ read=$(curl http://$apacheserverip:80/mongoRead.php | grep -v "^&lt;")
 ss-display "$read from $apacheserverip"
 </target>
       <target name="onvmremove" />
+      <target name="onvmadd" />
    </targets>
    <packages />
    <prerecipe />

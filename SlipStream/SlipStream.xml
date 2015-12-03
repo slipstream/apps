@@ -6,21 +6,21 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <children>
-      <item category="Deployment" description="deploys from sources allowing inclusion in CI system" name="slipstream-sources-deployment" version="1879">
+      <item category="Deployment" description="deploys from sources allowing inclusion in CI system" name="slipstream-sources-deployment" version="2014">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="installs a full SlipStream server from sources on CentOS 6" name="slipstream-sources" version="1875">
+      <item category="Image" description="installs a full SlipStream server from sources on CentOS 6" name="slipstream-sources" version="2128">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
             <groupMembers />
          </authz>
       </item>
-      <item category="Image" description="SlipStream community edition" name="slipstream" version="1860">
+      <item category="Image" description="SlipStream community edition" name="slipstream" version="2126">
          <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
             <groupMembers />
          </authz>

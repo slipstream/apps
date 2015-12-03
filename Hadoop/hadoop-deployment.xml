@@ -7,7 +7,7 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-02 08:26:30.263 UTC" />
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <nodes>
@@ -16,7 +16,8 @@
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/slave" maxProvisioningFailures="0" multiplicity="1" name="slave" network="Public">
             <parameterMappings />
             <parameters />
-            <image category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:45.729 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/slave" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="1716">
+            <notes length="0" />
+            <image category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:48.580 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/slave" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="2135">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -26,12 +27,16 @@
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>First version of this image</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
+                  <target name="onvmadd" />
+                  <target name="onvmremove" />
+                  <target name="report" />
                   <target name="execute">#!/bin/bash -x
 
 
@@ -256,9 +261,6 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Hadoop install ...'</target>
-                  <target name="onvmadd" />
-                  <target name="report" />
-                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -273,9 +275,13 @@ ss-set statecustom 'Hadoop install ...'</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -308,6 +314,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -315,9 +331,10 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -332,10 +349,18 @@ ss-set statecustom 'Hadoop install ...'</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -343,9 +368,20 @@ ss-set statecustom 'Hadoop install ...'</target>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -378,22 +414,37 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -426,15 +477,33 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -467,9 +536,35 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.small</value>
                         <defaultValue>t2.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -478,15 +573,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -519,6 +615,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -526,22 +632,23 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>exoscale-ch-gva.instance.type</string>
                      <parameter category="exoscale-ch-gva" description="Instance type (flavor)" isSet="true" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="String">
-                        <value>Small</value>
-                        <defaultValue>Small</defaultValue>
+                        <value>Medium</value>
+                        <defaultValue>Medium</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -574,6 +681,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -582,14 +699,15 @@ ss-set statecustom 'Hadoop install ...'</target>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -622,6 +740,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -629,9 +757,10 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -639,14 +768,42 @@ ss-set statecustom 'Hadoop install ...'</target>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -654,9 +811,13 @@ ss-set statecustom 'Hadoop install ...'</target>
                      <parameter category="Output" description="node state" isSet="false" mandatory="false" name="node_state" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>node_hostname</string>
+                     <parameter category="Output" description="Node Hostname (DNS)" isSet="false" mandatory="false" name="node_hostname" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -689,40 +850,49 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>node_hostname</string>
-                     <parameter category="Output" description="Node Hostname (DNS)" isSet="false" mandatory="false" name="node_hostname" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -755,6 +925,16 @@ ss-set statecustom 'Hadoop install ...'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -763,7 +943,6 @@ ss-set statecustom 'Hadoop install ...'</target>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -785,7 +964,8 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </parameter>
                </entry>
             </parameters>
-            <image category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:32:47.749 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/ambari" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="1714">
+            <notes length="0" />
+            <image category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:51.387 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/ambari" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="2136">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -795,211 +975,13 @@ ss-set statecustom 'Hadoop install ...'</target>
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>First version of this image</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmadd">#!/bin/bash
-set -e
-
-
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
-
-
-    ss-display "Haddop: adding slave"
-    cluster_name=`ss-get HDP_Cluster_Name`
-    master_hostname=`ss-get  master.1:node_hostname`
-
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-
-
-
-        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
-        slave_state=$(ss-get $INSTANCE_NAME:node_state)
-
-
-
-        while [ "$slave_state" != 'ambari_agent_ready' ]
-        do
-            ss-display "Wait new salve ..."
-            slave_state=$(ss-get $INSTANCE_NAME:node_state)
-            
-        done
-
-
-
-        ss-display "Add new salve ..."
-        #Add the host to the cluster.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
-
-
-
-        ss-display "Add host components"
-        # Add the necessary host components to the host.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        sleep 5
-
-
-
-        ss-display "Install host components"
-        #Install the components
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 390
-
-
-
-        ss-display "Start host components"
-        #Start the components.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 100
-
-
-
-        #Restart Ganglia_Server (Ganglia:  metrics)
-
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Ganglia Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"GANGLIA",
-         "component_name":"GANGLIA_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-          #Restart NameNode (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Secondary NameNode  (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Secondary NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"SECONDARY_NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-        #Restart Resource_Manager (YARN)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Resource Manager",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"YARN",
-         "component_name":"RESOURCEMANAGER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Zookeeper Server (Zookeeper: coordinator)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Zookeeper Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"ZOOKEEPER",
-         "component_name":"ZOOKEEPER_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-    done
-
-
-
-fi
-
-
-
-ss-display "${cluster_name} Ready"
-</target>
                   <target name="onvmremove">#!/bin/bash
 set -e
 
@@ -1174,6 +1156,7 @@ fi
 
 ss-display "${cluster_name} Ready"
 </target>
+                  <target name="report" />
                   <target name="execute">#!/bin/sh -x
 
 
@@ -1691,7 +1674,205 @@ ss-set ss:url.service ${url}
 ss-set url.service ${url}
 
 ss-set statecustom "${cluster_name} Ready"</target>
-                  <target name="report" />
+                  <target name="onvmadd">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+    ss-display "Haddop: adding slave"
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+        slave_state=$(ss-get $INSTANCE_NAME:node_state)
+
+
+
+        while [ "$slave_state" != 'ambari_agent_ready' ]
+        do
+            ss-display "Wait new salve ..."
+            slave_state=$(ss-get $INSTANCE_NAME:node_state)
+            
+        done
+
+
+
+        ss-display "Add new salve ..."
+        #Add the host to the cluster.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+
+
+
+        ss-display "Add host components"
+        # Add the necessary host components to the host.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        sleep 5
+
+
+
+        ss-display "Install host components"
+        #Install the components
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 390
+
+
+
+        ss-display "Start host components"
+        #Start the components.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 100
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+    done
+
+
+
+fi
+
+
+
+ss-display "${cluster_name} Ready"
+</target>
                </targets>
                <packages />
                <prerecipe />
@@ -1710,9 +1891,13 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      <parameter category="Output" description="Ambari_Password" isSet="false" mandatory="false" name="Ambari_Password" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1745,6 +1930,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1753,6 +1948,14 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   <entry>
                      <string>hadoop_installer_hostname</string>
                      <parameter category="Output" description="ambari server hostname (dns)" isSet="false" mandatory="false" name="hadoop_installer_hostname" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>ec2-sa-east-1.security.groups</string>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>network</string>
@@ -1766,17 +1969,18 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1784,9 +1988,20 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1819,22 +2034,37 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1867,15 +2097,33 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1908,6 +2156,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.small</value>
                         <defaultValue>t2.small</defaultValue>
@@ -1918,16 +2176,33 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      <parameter category="Output" description="base64 encoded ssh public key for ambari_server" isSet="false" mandatory="false" name="hadoop_installer_id_rsa64" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1960,6 +2235,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1967,9 +2252,10 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1982,7 +2268,7 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2015,6 +2301,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2023,14 +2319,15 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2063,6 +2360,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2070,9 +2377,10 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -2082,6 +2390,17 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   <entry>
                      <string>Ambari_Username</string>
                      <parameter category="Output" description="Ambari_Username" isSet="false" mandatory="false" name="Ambari_Username" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>Hadoop_install_progress</string>
@@ -2100,9 +2419,10 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -2110,9 +2430,25 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      <parameter category="Output" description="Dns domain" isSet="false" mandatory="false" name="dns_domain" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2145,6 +2481,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2152,29 +2498,32 @@ ss-set statecustom "${cluster_name} Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2207,6 +2556,16 @@ ss-set statecustom "${cluster_name} Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2215,7 +2574,6 @@ ss-set statecustom "${cluster_name} Ready"</target>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -2223,7 +2581,8 @@ ss-set statecustom "${cluster_name} Ready"</target>
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/master" maxProvisioningFailures="0" multiplicity="1" name="master" network="Public">
             <parameterMappings />
             <parameters />
-            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-08-12 00:16:05.792 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1871">
+            <notes length="0" />
+            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:56:15.683 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="2134">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -2233,10 +2592,11 @@ ss-set statecustom "${cluster_name} Ready"</target>
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="anis">
-                  <comment>Update hadoop_progress section</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
                   <target name="onvmremove" />
@@ -2526,14 +2886,12 @@ ss-set statecustom 'VNC server Ready!'
 
 installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
 
-ss-set statecustom "${installer_state}"
-sleep 10
 
 
-ss-set statecustom "${Hadoop install ... }"
 while [ "$installer_state" != 'true' ]
 do
 sleep 10   
+ss-set statecustom 'Hadoop install ...'
 installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
 done
 
@@ -2616,7 +2974,7 @@ touch pi-calcul
 cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/pi-calcul
 #!/bin/sh
 echo "-------------------------------------------------------------------------------"
-echo "Im an example application to demonstrate that the Hadoop infrastructure works"
+echo "Hello! I'm an example application by SlipStream"
 echo "I will estimate the Pi number ..."
 echo "-------------------------------------------------------------------------------"
 echo ""
@@ -2650,9 +3008,13 @@ ss-set statecustom 'Master node Ready!'</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2685,6 +3047,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2692,9 +3064,10 @@ ss-set statecustom 'Master node Ready!'</target>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -2713,15 +3086,34 @@ ss-set statecustom 'Master node Ready!'</target>
                      <parameter category="Output" description="base64 encoded ssh public key for hadoop master" isSet="false" mandatory="false" name="master_id_rsa64" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>hostname</string>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>vnc_password</string>
@@ -2730,7 +3122,7 @@ ss-set statecustom 'Master node Ready!'</target>
                   <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2763,22 +3155,37 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2811,15 +3218,33 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2852,22 +3277,49 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.medium</value>
                         <defaultValue>t2.medium</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2900,6 +3352,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2907,9 +3369,10 @@ ss-set statecustom 'Master node Ready!'</target>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -2922,7 +3385,7 @@ ss-set statecustom 'Master node Ready!'</target>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -2955,6 +3418,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -2963,14 +3436,15 @@ ss-set statecustom 'Master node Ready!'</target>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -3003,6 +3477,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -3010,9 +3494,10 @@ ss-set statecustom 'Master node Ready!'</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -3020,14 +3505,26 @@ ss-set statecustom 'Master node Ready!'</target>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -3035,9 +3532,25 @@ ss-set statecustom 'Master node Ready!'</target>
                      <parameter category="Output" description="vnc server address" isSet="false" mandatory="false" name="vnc_address" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -3070,6 +3583,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -3081,29 +3604,32 @@ ss-set statecustom 'Master node Ready!'</target>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -3136,6 +3662,16 @@ ss-set statecustom 'Master node Ready!'</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -3144,7 +3680,6 @@ ss-set statecustom 'Master node Ready!'</target>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
    </nodes>

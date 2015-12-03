@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 14:35:45.729 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="1716">
+<imageModule category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:48.580 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="2135">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,10 +6,12 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="onvmadd" />
+      <target name="report" />
       <target name="execute">#!/bin/bash -x
 
 
@@ -235,8 +237,6 @@ ss-set url.ssh "${url_ssh}"
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Hadoop install ...'</target>
       <target name="onvmremove" />
-      <target name="onvmadd" />
-      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

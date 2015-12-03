@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-08-12 00:16:05.792 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="1871">
+<imageModule category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:56:15.683 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="2134">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,11 +6,10 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmremove" />
       <target name="report" />
       <target name="onvmadd" />
       <target name="execute">#!/bin/bash -x
@@ -298,14 +297,12 @@ ss-set statecustom 'VNC server Ready!'
 
 installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
 
-ss-set statecustom "${installer_state}"
-sleep 10
 
 
-ss-set statecustom "${Hadoop install ... }"
 while [ "$installer_state" != 'true' ]
 do
 sleep 10   
+ss-set statecustom 'Hadoop install ...'
 installer_state=`ss-get --timeout 480 hadoop_installer.1:complete`
 done
 
@@ -388,7 +385,7 @@ touch pi-calcul
 cat &lt;&lt; EOF &gt;&gt; /root/hadoop-examples/pi-calcul
 #!/bin/sh
 echo "-------------------------------------------------------------------------------"
-echo "Im an example application to demonstrate that the Hadoop infrastructure works"
+echo "Hello! I'm an example application by SlipStream"
 echo "I will estimate the Pi number ..."
 echo "-------------------------------------------------------------------------------"
 echo ""
@@ -407,6 +404,7 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Master node Ready!'</target>
+      <target name="onvmremove" />
    </targets>
    <packages />
    <prerecipe />

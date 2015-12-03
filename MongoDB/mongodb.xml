@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-07-01 21:11:34.961 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="1758">
+<imageModule category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:51:31.366 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="2132">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,13 +6,13 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report" />
       <target name="onvmadd" />
       <target name="onvmremove" />
-      <target name="report" />
       <target name="execute">#!/bin/bash -xe
 
 

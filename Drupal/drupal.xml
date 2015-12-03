@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-06-23 09:22:29.478 UTC" deleted="false" description="Single node deployment of Drupal 7" isBase="false" isLatestVersion="true" lastModified="2015-07-01 22:44:07.284 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/drupal.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Drupal" platform="centos" shortName="drupal" version="1738">
+<imageModule category="Image" creation="2014-06-23 09:22:29.478 UTC" deleted="false" description="Single node deployment of Drupal 7" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:08:46.826 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/drupal.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Drupal" platform="centos" shortName="drupal" version="2138">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,13 +6,13 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <published publicationDate="2015-07-01 22:44:07.284 UTC" />
-   <cloudNames length="12">
+   <published publicationDate="2015-11-20 12:08:46.826 UTC" />
+   <cloudNames length="15">
       </cloudNames>
-   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
    <targets>
       <target name="onvmadd" />
-      <target name="onvmremove" />
       <target name="report" />
       <target name="execute">#!/usr/bin/env bash
 
@@ -85,6 +85,7 @@ ss-set ss:url.service http://${hostname}/drupal
 
 ss-display "Drupal is ready to go!"
 </target>
+      <target name="onvmremove" />
    </targets>
    <packages />
    <prerecipe />

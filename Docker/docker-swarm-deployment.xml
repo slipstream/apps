@@ -7,16 +7,18 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-02 09:05:05.580 UTC" />
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
-   <runs count="0" limit="20" offset="0" totalCount="0" />
+   <runs count="1" limit="20" offset="0" totalCount="1">
+      </runs>
    <nodes>
       <entry>
          <string>node</string>
          <node cloudService="default" creation="2015-07-02 09:04:26.322 UTC" deleted="false" imageUri="module/apps/Docker/docker-node" maxProvisioningFailures="0" multiplicity="1" name="node" network="Public">
             <parameterMappings />
             <parameters />
-            <image category="Image" creation="2015-06-08 12:18:12.612 UTC" deleted="false" description="Docker node" isBase="false" isLatestVersion="true" lastModified="2015-07-01 15:37:43.163 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-node" parentUri="module/apps/Docker" platform="centos" shortName="docker-node" version="1720">
+            <notes length="0" />
+            <image category="Image" creation="2015-06-08 12:18:12.612 UTC" deleted="false" description="Docker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:17.995 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-node" parentUri="module/apps/Docker" platform="centos" shortName="docker-node" version="2139">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -26,12 +28,15 @@
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>First version of this image</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
+                  <target name="report" />
+                  <target name="onvmremove" />
                   <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -x
 
@@ -46,8 +51,6 @@ yum -y install docker-io
 # 
 docker -H tcp://0.0.0.0:2375 -d &amp;
 ss-display "Node Ready"</target>
-                  <target name="report" />
-                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -62,9 +65,13 @@ ss-display "Node Ready"</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -97,6 +104,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -104,9 +121,10 @@ ss-display "Node Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -121,10 +139,18 @@ ss-display "Node Ready"</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -132,9 +158,20 @@ ss-display "Node Ready"</target>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -167,15 +204,37 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>ec2-us-east-1.security.groups</string>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -208,22 +267,29 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
-                     </parameter>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -256,22 +322,53 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.small</value>
                         <defaultValue>t2.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -304,6 +401,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -311,9 +418,10 @@ ss-display "Node Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -326,7 +434,7 @@ ss-display "Node Ready"</target>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -359,6 +467,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -367,14 +485,15 @@ ss-display "Node Ready"</target>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -407,6 +526,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -414,9 +543,10 @@ ss-display "Node Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -424,20 +554,48 @@ ss-display "Node Ready"</target>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -470,6 +628,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -477,29 +645,32 @@ ss-display "Node Ready"</target>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -532,6 +703,16 @@ ss-display "Node Ready"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -540,7 +721,6 @@ ss-display "Node Ready"</target>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -562,7 +742,8 @@ ss-display "Node Ready"</target>
                   </parameter>
                </entry>
             </parameters>
-            <image category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 15:47:30.256 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-swarm" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="1721">
+            <notes length="0" />
+            <image category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-swarm" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -572,13 +753,13 @@ ss-display "Node Ready"</target>
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>First version of this image</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="report" />
                   <target name="execute">#!/bin/bash -x
 
 hostname docker_manager
@@ -683,6 +864,25 @@ ss-set ss:url.service "${url}"
 
 ss-display "Docker Ready"
 </target>
+                  <target name="onvmremove">#!/bin/bash
+set -e
+
+
+ss-display "Docker: removing node"
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker rmi -f $node_ip
+    done
+
+fi
+
+
+ss-display "Docker Ready!"</target>
+                  <target name="report" />
                   <target name="onvmadd">#!/bin/bash
 set -e
 
@@ -702,34 +902,12 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
 fi
 
 ss-display "Docker Ready!"</target>
-                  <target name="onvmremove">#!/bin/bash
-set -e
-
-
-ss-display "Docker: removing node"
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-        node_ip=$(ss-get $INSTANCE_NAME:hostname)
-        docker rmi -f $node_ip
-    done
-
-fi
-
-
-ss-display "Docker Ready!"</target>
                </targets>
                <packages />
                <prerecipe />
                <recipe />
                <cloudImageIdentifiers />
                <parameters>
-                  <entry>
-                     <string>container</string>
-                     <parameter category="Input" description="REPOSITORY" isSet="false" mandatory="false" name="container" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
                   <entry>
                      <string>ultimum-cz1.instance.type</string>
                      <parameter category="ultimum-cz1" description="Instance type (flavor)" isSet="true" mandatory="true" name="ultimum-cz1.instance.type" order="0" order_="0" readonly="false" type="String">
@@ -738,9 +916,17 @@ ss-display "Docker Ready!"</target>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>container</string>
+                     <parameter category="Input" description="REPOSITORY" isSet="false" mandatory="false" name="container" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -773,6 +959,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -780,9 +976,10 @@ ss-display "Docker Ready!"</target>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -797,24 +994,43 @@ ss-display "Docker Ready!"</target>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>cluster_id</string>
-                     <parameter category="Output" description="Docker_swarm cluster_id" isSet="false" mandatory="false" name="cluster_id" order="0" order_="0" readonly="false" type="String" />
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>cluster_id</string>
+                     <parameter category="Output" description="Docker_swarm cluster_id" isSet="false" mandatory="false" name="cluster_id" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>hostname</string>
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -847,22 +1063,37 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -895,15 +1126,33 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -936,22 +1185,49 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.small</value>
                         <defaultValue>t2.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -984,6 +1260,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -991,9 +1277,10 @@ ss-display "Docker Ready!"</target>
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1006,7 +1293,7 @@ ss-display "Docker Ready!"</target>
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1039,6 +1326,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1047,14 +1344,15 @@ ss-display "Docker Ready!"</target>
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1087,6 +1385,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1094,9 +1402,10 @@ ss-display "Docker Ready!"</target>
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -1104,20 +1413,48 @@ ss-display "Docker Ready!"</target>
                      <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1150,6 +1487,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1157,29 +1504,32 @@ ss-display "Docker Ready!"</target>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -1212,6 +1562,16 @@ ss-display "Docker Ready!"</target>
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -1220,7 +1580,6 @@ ss-display "Docker Ready!"</target>
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
    </nodes>

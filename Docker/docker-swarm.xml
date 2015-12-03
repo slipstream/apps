@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-07-01 15:47:30.256 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="1721">
+<imageModule category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,11 +6,10 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="report" />
       <target name="onvmremove">#!/bin/bash
 set -e
 
@@ -29,6 +28,26 @@ fi
 
 
 ss-display "Docker Ready!"</target>
+      <target name="onvmadd">#!/bin/bash
+set -e
+
+#
+#Register the Swarm agents to the discovery service
+#
+ss-display "Docker: adding node"
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+    cluster_id=`ss-get --timeout 480 cluster_id`
+    
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
+    done
+
+fi
+
+ss-display "Docker Ready!"</target>
+      <target name="report" />
       <target name="execute">#!/bin/bash -x
 
 hostname docker_manager
@@ -133,25 +152,6 @@ ss-set ss:url.service "${url}"
 
 ss-display "Docker Ready"
 </target>
-      <target name="onvmadd">#!/bin/bash
-set -e
-
-#
-#Register the Swarm agents to the discovery service
-#
-ss-display "Docker: adding node"
-if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
-
-    cluster_id=`ss-get --timeout 480 cluster_id`
-    
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-        node_ip=$(ss-get $INSTANCE_NAME:hostname)
-        docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
-    done
-
-fi
-
-ss-display "Docker Ready!"</target>
    </targets>
    <packages />
    <prerecipe />

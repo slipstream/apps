@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-05-14 10:11:42.724 UTC" deleted="false" description="deploys from sources allowing inclusion in CI system" isLatestVersion="true" lastModified="2015-08-17 13:11:34.954 UTC" logoLink="" parentUri="module/apps/SlipStream" shortName="slipstream-sources-deployment" version="1879">
+<deploymentModule category="Deployment" creation="2015-05-14 10:11:42.724 UTC" deleted="false" description="deploys from sources allowing inclusion in CI system" isLatestVersion="true" lastModified="2015-11-11 21:58:21.432 UTC" logoLink="" parentUri="module/apps/SlipStream" shortName="slipstream-sources-deployment" version="2014">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,13 +6,13 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="12">
+   <cloudNames length="15">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <nodes>
       <entry>
          <string>slipstream</string>
-         <node cloudService="default" creation="2015-08-17 13:11:34.946 UTC" deleted="false" imageUri="module/apps/SlipStream/slipstream-sources" maxProvisioningFailures="0" multiplicity="1" name="slipstream" network="Public">
+         <node cloudService="default" creation="2015-11-11 21:58:21.421 UTC" deleted="false" imageUri="module/apps/SlipStream/slipstream-sources" maxProvisioningFailures="0" multiplicity="1" name="slipstream" network="Public">
             <parameterMappings>
                <entry>
                   <string>slipstream_server_deps_version</string>
@@ -24,6 +24,12 @@
                   <string>slipstream_ui_version</string>
                   <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
                      <value>'master'</value>
+                  </parameter>
+               </entry>
+               <entry>
+                  <string>slipstream_backend</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_backend" order="0" order_="0" readonly="false" type="String">
+                     <value>'hsqldb'</value>
                   </parameter>
                </entry>
                <entry>
@@ -51,14 +57,14 @@
                   </parameter>
                </entry>
                <entry>
-                  <string>slipstream_connectors_version</string>
-                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
+                  <string>slipstream_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
                      <value>'master'</value>
                   </parameter>
                </entry>
                <entry>
-                  <string>slipstream_version</string>
-                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
+                  <string>slipstream_connectors_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
                      <value>'master'</value>
                   </parameter>
                </entry>
@@ -77,6 +83,12 @@
                   </parameter>
                </entry>
                <entry>
+                  <string>slipstream_backend</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_backend" order="0" order_="0" readonly="false" type="String">
+                     <value>'hsqldb'</value>
+                  </parameter>
+               </entry>
+               <entry>
                   <string>slipstream_client_version</string>
                   <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_client_version" order="0" order_="0" readonly="false" type="String">
                      <value>'master'</value>
@@ -101,19 +113,20 @@
                   </parameter>
                </entry>
                <entry>
-                  <string>slipstream_connectors_version</string>
-                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
-                     <value>'master'</value>
-                  </parameter>
-               </entry>
-               <entry>
                   <string>slipstream_version</string>
                   <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_version" order="0" order_="0" readonly="false" type="String">
                      <value>'master'</value>
                   </parameter>
                </entry>
+               <entry>
+                  <string>slipstream_connectors_version</string>
+                  <parameter category="General" description="" isMappedValue="false" mandatory="false" name="slipstream_connectors_version" order="0" order_="0" readonly="false" type="String">
+                     <value>'master'</value>
+                  </parameter>
+               </entry>
             </parameters>
-            <image category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-08-17 13:03:54.196 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/SlipStream/slipstream-sources" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="1875">
+            <notes length="0" />
+            <image category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:12.401 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/SlipStream/slipstream-sources" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="2128">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -123,12 +136,18 @@
                      <string>meb</string>
                      <string>rob</string>
                      <string>stef</string>
+                     <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="sixsq">
-                  <comment>update permissions to allow anyone to run module</comment>
+               <commit author="super">
+                  <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
+                  <target name="report">#!/bin/sh -x
+
+cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
+</target>
+                  <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -x
 
 # fail quickly on any error
@@ -142,7 +161,7 @@ slipstream_server_deps_version=`ss-get slipstream_server_deps_version`
 slipstream_ui_version=`ss-get slipstream_ui_version`
 skip_tests=`ss-get skip_tests`
 install_examples=`ss-get install_examples`
-
+slipstream_backend=`ss-get slipstream_backend`
 
 #
 # upgrade system
@@ -252,7 +271,7 @@ tar zxf ~/SlipStreamBootstrap/SlipStream/yum/target/SlipStream*.tar.gz
 #
 ss-set statecustom "Installing SlipStream..."
 export SLIPSTREAM_EXAMPLES=${install_examples}
-curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream-install.sh | bash -s community local
+curl -sSfL https://raw.githubusercontent.com/slipstream/SlipStream/master/install/slipstream.sh | bash -s -- -d $slipstream_backend -e community -k local
 
 #
 # restarting services (probably not necessary)
@@ -297,11 +316,6 @@ done
 
 exit $exit_code
 </target>
-                  <target name="onvmadd" />
-                  <target name="report">#!/bin/sh -x
-
-cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
-</target>
                   <target name="onvmremove" />
                </targets>
                <packages />
@@ -324,9 +338,13 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>ec2-ap-southeast-2.instance.type</string>
                      <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -359,6 +377,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -373,9 +401,10 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
-                     <parameter category="ec2-sa-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-sa-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-sa-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -397,6 +426,13 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.is.firewall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>slipstream_ui_version</string>
                      <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
                         <value>master</value>
@@ -405,9 +441,10 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -415,9 +452,20 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                      <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.disks.bus.type</string>
+                     <parameter category="cyclone-fr1" description="VM disks bus type" isSet="true" mandatory="true" name="cyclone-fr1.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-east-1.instance.type</string>
                      <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -450,10 +498,24 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>slipstream_server_version</string>
@@ -464,15 +526,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
                      <parameter category="ec2-us-west-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -505,15 +568,33 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-west.instance.type</string>
                      <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -546,22 +627,56 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>cyclone-fr1.instance.type</string>
+                     <parameter category="cyclone-fr1" description="Cloud instance type" isSet="true" mandatory="true" name="cyclone-fr1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>slipstream_backend</string>
+                     <parameter category="Input" description="RDBMS - hsqldb or postgresql" isSet="true" mandatory="false" name="slipstream_backend" order="0" order_="0" readonly="false" type="String">
+                        <value>hsqldb</value>
+                        <defaultValue>hsqldb</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>ec2-us-west-1.security.groups</string>
-                     <parameter category="ec2-us-west-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.instance.type</string>
                      <parameter category="ec2-ap-northeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-northeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -594,6 +709,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -601,9 +726,10 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-ap-southeast-2.security.groups</string>
-                     <parameter category="ec2-ap-southeast-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-southeast-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -623,7 +749,7 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   <entry>
                      <string>ec2-ap-southeast-1.instance.type</string>
                      <parameter category="ec2-ap-southeast-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -656,6 +782,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -664,14 +800,15 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   <entry>
                      <string>exoscale-ch-gva.security.groups</string>
                      <parameter category="exoscale-ch-gva" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="exoscale-ch-gva.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.instance.type</string>
                      <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -704,6 +841,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -711,9 +858,10 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-eu-west.security.groups</string>
-                     <parameter category="ec2-eu-west" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-west" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-west.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -728,20 +876,48 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-james-chadwick.disks.bus.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="VM disks bus type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.disks.bus.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>virtio</string>
+                           <string>scsi</string>
+                        </enumValues>
+                        <value>virtio</value>
+                        <defaultValue>virtio</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
                      <string>instanceid</string>
                      <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.security.groups</string>
-                     <parameter category="ec2-eu-central-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.instance.type</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>m1.small</string>
+                           <string>c1.medium</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.xlarge</string>
+                           <string>t1.micro</string>
+                           <string>standard.xsmall</string>
+                        </enumValues>
+                        <value>m1.small</value>
+                        <defaultValue>m1.small</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-eu-central-1.instance.type</string>
                      <parameter category="ec2-eu-central-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-central-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -774,6 +950,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -781,23 +967,26 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.security.groups</string>
-                     <parameter category="ec2-us-west-2" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-us-west-2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-west-2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ultimum-cz1.security.groups</string>
                      <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
                      <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <value>default</value>
-                        <defaultValue>default</defaultValue>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -810,7 +999,7 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
                      <parameter category="ec2-us-west-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-west-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="32">
+                        <enumValues length="42">
                            <string>t2.micro</string>
                            <string>t2.small</string>
                            <string>t2.medium</string>
@@ -843,6 +1032,16 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                            <string>d2.8xlarge</string>
                            <string>g2.2xlarge</string>
                            <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
                         </enumValues>
                         <value>t2.micro</value>
                         <defaultValue>t2.micro</defaultValue>
@@ -851,7 +1050,6 @@ cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
                </parameters>
                <notes length="0" />
             </image>
-            <notes length="0" />
          </node>
       </entry>
    </nodes>
