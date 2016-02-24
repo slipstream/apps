@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
+<imageModule category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,28 +6,10 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmremove">#!/bin/bash
-set -e
-
-
-ss-display "Docker: removing node"
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-        node_ip=$(ss-get $INSTANCE_NAME:hostname)
-        docker rmi -f $node_ip
-    done
-
-fi
-
-
-ss-display "Docker Ready!"</target>
       <target name="onvmadd">#!/bin/bash
 set -e
 
@@ -48,6 +30,24 @@ fi
 
 ss-display "Docker Ready!"</target>
       <target name="report" />
+      <target name="onvmremove">#!/bin/bash
+set -e
+
+
+ss-display "Docker: removing node"
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker rmi -f $node_ip
+    done
+
+fi
+
+
+ss-display "Docker Ready!"</target>
       <target name="execute">#!/bin/bash -x
 
 hostname docker_manager

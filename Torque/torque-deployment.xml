@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-07-01 20:23:41.298 UTC" deleted="false" description="Deployment of an Apache Torque cluster with one master node and multiple worker nodes" isLatestVersion="true" lastModified="2015-07-02 15:29:13.535 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/torque.png" parentUri="module/apps/Torque" shortName="torque-deployment" version="1797">
+<deploymentModule category="Deployment" creation="2015-07-01 20:23:41.298 UTC" deleted="false" description="Deployment of an Apache Torque cluster with one master node and multiple worker nodes" isLatestVersion="true" lastModified="2015-07-02 15:29:13.535 UTC" logoLink="https://nuv.la/images/modules-logos/torque.png" parentUri="module/apps/Torque" shortName="torque-deployment" version="1797">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,10 +7,11 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-02 15:29:13.535 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="4" limit="20" offset="0" totalCount="4">
       </runs>
+   <targets />
    <nodes>
       <entry>
          <string>worker</string>
@@ -67,8 +68,7 @@
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
-            <image category="Image" creation="2013-11-16 08:03:03.212 UTC" deleted="false" description="Torque worker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:18.273 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" name="apps/Torque/torque-worker" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-worker" version="2129">
+            <image category="Image" creation="2013-11-16 08:03:03.212 UTC" deleted="false" description="Torque worker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:18.273 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" name="apps/Torque/torque-worker" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-worker" version="2129">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -85,9 +85,6 @@
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmremove" />
-                  <target name="report" />
-                  <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -xe
 
 WORKER_IP=$(ss-get hostname)
@@ -127,6 +124,9 @@ ssh-keyscan $MASTER_HOSTNAME &gt;&gt; /home/tuser/.ssh/known_hosts
 ss-display 'Ready'
 
 </target>
+                  <target name="report" />
+                  <target name="onvmadd" />
+                  <target name="onvmremove" />
                </targets>
                <packages>
                   <package name="munge" />
@@ -836,6 +836,7 @@ apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -857,8 +858,7 @@ apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
-            <image category="Image" creation="2013-11-16 10:03:32.474 UTC" deleted="false" description="Torque master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:21.240 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" name="apps/Torque/torque-master" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-master" version="2130">
+            <image category="Image" creation="2013-11-16 10:03:32.474 UTC" deleted="false" description="Torque master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:21.240 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" name="apps/Torque/torque-master" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-master" version="2130">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -875,6 +875,8 @@ apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
+                  <target name="onvmadd" />
+                  <target name="onvmremove" />
                   <target name="execute">#!/bin/bash -xe
 
 function get-hostname {
@@ -953,9 +955,7 @@ ss-set ssh_key_rsa_b64 $(cat /home/tuser/.ssh/id_rsa | base64 --wrap 0)
 ss-display 'Ready'
 
 </target>
-                  <target name="onvmadd" />
                   <target name="report" />
-                  <target name="onvmremove" />
                </targets>
                <packages>
                   <package name="munge" />
@@ -1669,6 +1669,7 @@ apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>

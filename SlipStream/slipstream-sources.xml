@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:12.401 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="2128">
+<imageModule category="Image" creation="2015-05-08 12:32:26.559 UTC" deleted="false" description="installs a full SlipStream server from sources on CentOS 6" isBase="false" isLatestVersion="true" lastModified="2016-02-02 13:30:56.681 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/slipstream.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/SlipStream" platform="centos" shortName="slipstream-sources" version="2829">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,14 +6,12 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="report">#!/bin/sh -x
-
-cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
-</target>
+      <target name="onvmadd" />
+      <target name="onvmremove" />
       <target name="execute">#!/bin/bash -x
 
 # fail quickly on any error
@@ -33,6 +31,17 @@ slipstream_backend=`ss-get slipstream_backend`
 # upgrade system
 #
 ss-set statecustom "Upgrading system..."
+
+# Workaround for an issue with python-boto 2.38. (Only on CentOS 6.7.  Not on CentOS 7.x)
+# python-boto-2.38 (from epel 6.8) depends -&gt; python-rsa-3.3.x depends -&gt; python-asn1 &gt;= 0.1.9 
+# 0.1.9 of the latter is not available neither in CentOS nor in epel.
+yum install yum-utils yum-versionlock -y
+yum-config-manager --disable epel
+# Locks either the currently installed version or the one seen 
+# in the repo (not epel - as it got disabled).
+yum versionlock python-boto
+yum-config-manager --enable epel
+
 yum clean all
 yum upgrade -y
 
@@ -182,8 +191,10 @@ done
 
 exit $exit_code
 </target>
-      <target name="onvmremove" />
-      <target name="onvmadd" />
+      <target name="report">#!/bin/sh -x
+
+cp -r /tmp/slipstream*.log $SLIPSTREAM_REPORT_DIR
+</target>
    </targets>
    <packages />
    <prerecipe />
@@ -205,24 +216,6 @@ exit $exit_code
          </parameter>
       </entry>
       <entry>
-         <string>network</string>
-         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
-            <enumValues length="2">
-               <string>Public</string>
-               <string>Private</string>
-            </enumValues>
-            <value>Public</value>
-            <defaultValue>Public</defaultValue>
-         </parameter>
-      </entry>
-      <entry>
-         <string>slipstream_server_deps_version</string>
-         <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_deps_version" order="0" order_="0" readonly="false" type="String">
-            <value>master</value>
-            <defaultValue>master</defaultValue>
-         </parameter>
-      </entry>
-      <entry>
          <string>slipstream_ui_version</string>
          <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_ui_version" order="0" order_="0" readonly="false" type="String">
             <value>master</value>
@@ -232,13 +225,6 @@ exit $exit_code
       <entry>
          <string>hostname</string>
          <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
-      </entry>
-      <entry>
-         <string>slipstream_server_version</string>
-         <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
-            <value>master</value>
-            <defaultValue>master</defaultValue>
-         </parameter>
       </entry>
       <entry>
          <string>slipstream_backend</string>
@@ -274,6 +260,31 @@ exit $exit_code
          <parameter category="Input" description="" isSet="true" mandatory="false" name="skip_tests" order="0" order_="0" readonly="false" type="String">
             <value>true</value>
             <defaultValue>true</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>slipstream_server_deps_version</string>
+         <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_deps_version" order="0" order_="0" readonly="false" type="String">
+            <value>master</value>
+            <defaultValue>master</defaultValue>
+         </parameter>
+      </entry>
+      <entry>
+         <string>slipstream_server_version</string>
+         <parameter category="Input" description="" isSet="true" mandatory="false" name="slipstream_server_version" order="0" order_="0" readonly="false" type="String">
+            <value>master</value>
+            <defaultValue>master</defaultValue>
          </parameter>
       </entry>
       </parameters>

@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2013-11-16 07:43:14.5 UTC" deleted="false" description="Installs and configures WordPress using Puppet" isBase="false" isLatestVersion="true" lastModified="2015-11-25 09:14:18.69 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/wordpress.svg" moduleReferenceUri="module/examples/images/ubuntu-14.04" parentUri="module/apps/WordPress" platform="ubuntu" shortName="wordpress" version="2483">
+<imageModule category="Image" creation="2013-11-16 07:43:14.5 UTC" deleted="false" description="Installs and configures WordPress using Puppet" isBase="false" isLatestVersion="true" lastModified="2016-02-23 01:02:56.973 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/wordpress.svg" moduleReferenceUri="module/examples/images/ubuntu-14.04" parentUri="module/apps/WordPress" platform="ubuntu" shortName="wordpress" version="3018">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,13 +6,11 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <published publicationDate="2015-11-25 09:14:18.69 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
-      </runs>
+   <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="execute">#!/bin/bash
+      <target name="execute">#!/bin/bash -x
 
 set -e
 set -x
@@ -60,8 +58,8 @@ ss-display "WordPress ready to go!"
 
 </target>
       <target name="report" />
-      <target name="onvmremove" />
       <target name="onvmadd" />
+      <target name="onvmremove" />
    </targets>
    <packages>
       <package name="curl" />
@@ -74,7 +72,7 @@ ss-display "WordPress ready to go!"
       <package name="mysql-client" />
    </packages>
    <prerecipe />
-   <recipe>#!/bin/bash
+   <recipe>#!/bin/bash -x
 
 function ss-display {
     $(which ss-display) "$1" || echo "$1"
@@ -123,17 +121,6 @@ service apache2 restart
          </parameter>
       </entry>
       <entry>
-         <string>network</string>
-         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
-            <enumValues length="2">
-               <string>Public</string>
-               <string>Private</string>
-            </enumValues>
-            <value>Public</value>
-            <defaultValue>Public</defaultValue>
-         </parameter>
-      </entry>
-      <entry>
          <string>hostname</string>
          <parameter category="Output" description="hostname/ip of the image" isSet="false" mandatory="true" name="hostname" order="0" order_="0" readonly="false" type="String" />
       </entry>
@@ -152,6 +139,17 @@ service apache2 restart
       <entry>
          <string>instanceid</string>
          <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+      </entry>
+      <entry>
+         <string>network</string>
+         <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+            <enumValues length="2">
+               <string>Public</string>
+               <string>Private</string>
+            </enumValues>
+            <value>Public</value>
+            <defaultValue>Public</defaultValue>
+         </parameter>
       </entry>
       <entry>
          <string>wordpress_title</string>

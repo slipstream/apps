@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2013-11-16 08:03:03.212 UTC" deleted="false" description="Torque worker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:18.273 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-worker" version="2129">
+<imageModule category="Image" creation="2013-11-16 08:03:03.212 UTC" deleted="false" description="Torque worker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:48:18.273 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/torque.png" moduleReferenceUri="module/examples/images/ubuntu-14.04" parentUri="module/apps/Torque" platform="ubuntu" shortName="torque-worker" version="2129">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,11 +6,12 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
       <target name="report" />
+      <target name="onvmadd" />
       <target name="execute">#!/bin/bash -xe
 
 WORKER_IP=$(ss-get hostname)
@@ -50,7 +51,6 @@ ssh-keyscan $MASTER_HOSTNAME &gt;&gt; /home/tuser/.ssh/known_hosts
 ss-display 'Ready'
 
 </target>
-      <target name="onvmadd" />
       <target name="onvmremove" />
    </targets>
    <packages>

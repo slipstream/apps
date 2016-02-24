@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-07-01 16:27:21.82 UTC" deleted="false" description="Deployment of a MongoDB cluster with a majority replication scheme" isLatestVersion="true" lastModified="2015-07-01 22:37:55.595 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" parentUri="module/apps/MongoDB" shortName="mongodb-cluster-deployment" version="1729">
+<deploymentModule category="Deployment" creation="2015-07-01 16:27:21.82 UTC" deleted="false" description="Deployment of a MongoDB cluster with a majority replication scheme" isLatestVersion="true" lastModified="2015-07-01 22:37:55.595 UTC" logoLink="https://nuv.la/images/modules-logos/mongodb.svg" parentUri="module/apps/MongoDB" shortName="mongodb-cluster-deployment" version="1729">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,18 +7,18 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-01 22:37:55.595 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
-   <runs count="1" limit="20" offset="0" totalCount="1">
+   <runs count="3" limit="20" offset="0" totalCount="3">
       </runs>
+   <targets />
    <nodes>
       <entry>
          <string>db</string>
          <node cloudService="default" creation="2015-07-01 16:27:21.82 UTC" deleted="false" imageUri="module/apps/MongoDB/mongodb" maxProvisioningFailures="0" multiplicity="3" name="db" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
-            <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:51:31.366 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="2132">
+            <image category="Image" creation="2014-06-16 11:15:38.633 UTC" deleted="false" description="MongoDB image for cluster deployment. Sets-up by default a majority replication scheme." isBase="false" isLatestVersion="true" lastModified="2016-02-23 03:08:48.942 UTC" loginUser="ubuntu" logoLink="https://nuv.la/images/modules-logos/mongodb.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" name="apps/MongoDB/mongodb" parentUri="module/apps/MongoDB" platform="ubuntu" shortName="mongodb" version="3024">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -31,10 +31,11 @@
                      <string>khaled</string>
                   </groupMembers>
                </authz>
-               <commit author="super">
-                  <comment>Updated security group to slipstream_managed</comment>
+               <commit author="lionel">
+                  <comment>Added ports for azure-west-europe</comment>
                </commit>
                <targets>
+                  <target name="onvmremove" />
                   <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -xe
 
@@ -250,7 +251,6 @@ fi
 
 </target>
                   <target name="report" />
-                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -348,59 +348,19 @@ service mongodb stop || true</recipe>
                      <parameter category="Output" description="MongoDB ready to serve data?" isSet="false" mandatory="false" name="isMongoReady" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
-                     <string>cyclone-fr1.ram</string>
-                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                     <string>nuvlabox-albert-einstein.is.firewall</string>
+                     <parameter category="nuvlabox-albert-einstein" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-albert-einstein.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
-                     <string>ec2-ap-southeast-2.instance.type</string>
-                     <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="42">
-                           <string>t2.micro</string>
-                           <string>t2.small</string>
-                           <string>t2.medium</string>
-                           <string>m3.medium</string>
-                           <string>m3.large</string>
-                           <string>m3.xlarge</string>
-                           <string>m3.2xlarge</string>
-                           <string>c4.large</string>
-                           <string>c4.xlarge</string>
-                           <string>c4.2xlarge</string>
-                           <string>c4.4xlarge</string>
-                           <string>c4.8xlarge</string>
-                           <string>c3.large</string>
-                           <string>c3.xlarge</string>
-                           <string>c3.2xlarge</string>
-                           <string>c3.4xlarge</string>
-                           <string>c3.8xlarge</string>
-                           <string>r3.large</string>
-                           <string>r3.xlarge</string>
-                           <string>r3.2xlarge</string>
-                           <string>r3.4xlarge</string>
-                           <string>r3.8xlarge</string>
-                           <string>i2.xlarge</string>
-                           <string>i2.2xlarge</string>
-                           <string>i2.4xlarge</string>
-                           <string>i2.8xlarge</string>
-                           <string>d2.xlarge</string>
-                           <string>d2.2xlarge</string>
-                           <string>d2.4xlarge</string>
-                           <string>d2.8xlarge</string>
-                           <string>g2.2xlarge</string>
-                           <string>g2.8xlarge</string>
-                           <string>t1.micro</string>
-                           <string>m1.small</string>
-                           <string>m1.large</string>
-                           <string>m1.xlarge</string>
-                           <string>c1.medium</string>
-                           <string>c1.xlarge</string>
-                           <string>m2.xlarge</string>
-                           <string>m2.2xlarge</string>
-                           <string>m2.4xlarge</string>
-                           <string>cc1.4xlarge</string>
-                        </enumValues>
-                        <value>t2.micro</value>
-                        <defaultValue>t2.micro</defaultValue>
-                     </parameter>
+                     <string>nuvlabox-demo.ram</string>
+                     <parameter category="nuvlabox-demo" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-demo.ram" order="30" order_="30" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-albert-einstein.ram</string>
+                     <parameter category="nuvlabox-albert-einstein" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-albert-einstein.ram" order="30" order_="30" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-sa-east-1.security.groups</string>
@@ -411,29 +371,10 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>network</string>
-                     <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="2">
-                           <string>Public</string>
-                           <string>Private</string>
-                        </enumValues>
-                        <value>Public</value>
-                        <defaultValue>Public</defaultValue>
-                     </parameter>
-                  </entry>
-                  <entry>
                      <string>nuvlabox-james-chadwick.is.firewall</string>
                      <parameter category="nuvlabox-james-chadwick" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-james-chadwick.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
                         <value>false</value>
                         <defaultValue>false</defaultValue>
-                     </parameter>
-                  </entry>
-                  <entry>
-                     <string>ec2-ap-southeast-1.security.groups</string>
-                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
-                        <value>slipstream_managed</value>
-                        <defaultValue>slipstream_managed</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -452,67 +393,22 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>ec2-us-east-1.instance.type</string>
-                     <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="42">
-                           <string>t2.micro</string>
-                           <string>t2.small</string>
-                           <string>t2.medium</string>
-                           <string>m3.medium</string>
-                           <string>m3.large</string>
-                           <string>m3.xlarge</string>
-                           <string>m3.2xlarge</string>
-                           <string>c4.large</string>
-                           <string>c4.xlarge</string>
-                           <string>c4.2xlarge</string>
-                           <string>c4.4xlarge</string>
-                           <string>c4.8xlarge</string>
-                           <string>c3.large</string>
-                           <string>c3.xlarge</string>
-                           <string>c3.2xlarge</string>
-                           <string>c3.4xlarge</string>
-                           <string>c3.8xlarge</string>
-                           <string>r3.large</string>
-                           <string>r3.xlarge</string>
-                           <string>r3.2xlarge</string>
-                           <string>r3.4xlarge</string>
-                           <string>r3.8xlarge</string>
-                           <string>i2.xlarge</string>
-                           <string>i2.2xlarge</string>
-                           <string>i2.4xlarge</string>
-                           <string>i2.8xlarge</string>
-                           <string>d2.xlarge</string>
-                           <string>d2.2xlarge</string>
-                           <string>d2.4xlarge</string>
-                           <string>d2.8xlarge</string>
-                           <string>g2.2xlarge</string>
-                           <string>g2.8xlarge</string>
-                           <string>t1.micro</string>
-                           <string>m1.small</string>
-                           <string>m1.large</string>
-                           <string>m1.xlarge</string>
-                           <string>c1.medium</string>
-                           <string>c1.xlarge</string>
-                           <string>m2.xlarge</string>
-                           <string>m2.2xlarge</string>
-                           <string>m2.4xlarge</string>
-                           <string>cc1.4xlarge</string>
+                     <string>exoscale-ch-gva.disk</string>
+                     <parameter category="exoscale-ch-gva" description="Size of the root disk" isSet="true" mandatory="true" name="exoscale-ch-gva.disk" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="5">
+                           <string>10G</string>
+                           <string>50G</string>
+                           <string>100G</string>
+                           <string>200G</string>
+                           <string>400G</string>
                         </enumValues>
-                        <value>t2.micro</value>
-                        <defaultValue>t2.micro</defaultValue>
+                        <value>10G</value>
+                        <defaultValue>10G</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>nuvlabox-james-chadwick.cpu</string>
-                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
-                     <string>ec2-us-east-1.security.groups</string>
-                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
-                        <value>slipstream_managed</value>
-                        <defaultValue>slipstream_managed</defaultValue>
-                     </parameter>
+                     <string>nuvlabox-albert-einstein.cpu</string>
+                     <parameter category="nuvlabox-albert-einstein" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-albert-einstein.cpu" order="20" order_="20" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-us-west-1.instance.type</string>
@@ -566,66 +462,24 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>cyclone-fr1.cpu</string>
-                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
-                     <string>replicaSetConf</string>
-                     <parameter category="Output" description="List of replica hostnames" isSet="false" mandatory="false" name="replicaSetConf" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
-                     <string>nuvlabox-james-chadwick.ram</string>
-                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
-                     <string>ec2-eu-west.instance.type</string>
-                     <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="42">
-                           <string>t2.micro</string>
-                           <string>t2.small</string>
-                           <string>t2.medium</string>
-                           <string>m3.medium</string>
-                           <string>m3.large</string>
-                           <string>m3.xlarge</string>
-                           <string>m3.2xlarge</string>
-                           <string>c4.large</string>
-                           <string>c4.xlarge</string>
-                           <string>c4.2xlarge</string>
-                           <string>c4.4xlarge</string>
-                           <string>c4.8xlarge</string>
-                           <string>c3.large</string>
-                           <string>c3.xlarge</string>
-                           <string>c3.2xlarge</string>
-                           <string>c3.4xlarge</string>
-                           <string>c3.8xlarge</string>
-                           <string>r3.large</string>
-                           <string>r3.xlarge</string>
-                           <string>r3.2xlarge</string>
-                           <string>r3.4xlarge</string>
-                           <string>r3.8xlarge</string>
-                           <string>i2.xlarge</string>
-                           <string>i2.2xlarge</string>
-                           <string>i2.4xlarge</string>
-                           <string>i2.8xlarge</string>
-                           <string>d2.xlarge</string>
-                           <string>d2.2xlarge</string>
-                           <string>d2.4xlarge</string>
-                           <string>d2.8xlarge</string>
-                           <string>g2.2xlarge</string>
-                           <string>g2.8xlarge</string>
-                           <string>t1.micro</string>
-                           <string>m1.small</string>
-                           <string>m1.large</string>
-                           <string>m1.xlarge</string>
-                           <string>c1.medium</string>
-                           <string>c1.xlarge</string>
-                           <string>m2.xlarge</string>
-                           <string>m2.2xlarge</string>
-                           <string>m2.4xlarge</string>
-                           <string>cc1.4xlarge</string>
+                     <string>nuvlabox-demo.instance.type</string>
+                     <parameter category="nuvlabox-demo" description="Instance type" isSet="true" mandatory="true" name="nuvlabox-demo.instance.type" order="10" order_="10" readonly="false" type="Enum">
+                        <enumValues length="4">
+                           <string>micro</string>
+                           <string>small</string>
+                           <string>medium</string>
+                           <string>large</string>
                         </enumValues>
-                        <value>t2.micro</value>
-                        <defaultValue>t2.micro</defaultValue>
+                        <value>micro</value>
+                        <defaultValue>micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>azure-west-europe.forwarded.ports</string>
+                     <parameter category="azure-west-europe" description="Forwarded ports (comma separated list)" isSet="true" mandatory="true" name="azure-west-europe.forwarded.ports" order="0" order_="0" readonly="false" type="String">
+                        <instructions>Ports that will be forwarded from the public IP of the Azure cloud service. The port 22 (SSH) on Linux machines and the port 3389 (RDP) on Windows machines are already forwarded</instructions>
+                        <value>27017,27018,27019,28017</value>
+                        <defaultValue>27017,27018,27019,28017</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -713,9 +567,385 @@ service mongodb stop || true</recipe>
                   </entry>
                   <entry>
                      <string>exoscale-ch-gva.instance.type</string>
-                     <parameter category="exoscale-ch-gva" description="Instance type (flavor)" isSet="true" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="String">
+                     <parameter category="exoscale-ch-gva" description="Cloud instance type" isSet="true" mandatory="true" name="exoscale-ch-gva.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="7">
+                           <string>Micro</string>
+                           <string>Tiny</string>
+                           <string>Small</string>
+                           <string>Medium</string>
+                           <string>Large</string>
+                           <string>Extra-large</string>
+                           <string>Huge</string>
+                        </enumValues>
                         <value>Micro</value>
                         <defaultValue>Micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>ec2-sa-east-1.instance.type</string>
+                     <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="42">
+                           <string>t2.micro</string>
+                           <string>t2.small</string>
+                           <string>t2.medium</string>
+                           <string>m3.medium</string>
+                           <string>m3.large</string>
+                           <string>m3.xlarge</string>
+                           <string>m3.2xlarge</string>
+                           <string>c4.large</string>
+                           <string>c4.xlarge</string>
+                           <string>c4.2xlarge</string>
+                           <string>c4.4xlarge</string>
+                           <string>c4.8xlarge</string>
+                           <string>c3.large</string>
+                           <string>c3.xlarge</string>
+                           <string>c3.2xlarge</string>
+                           <string>c3.4xlarge</string>
+                           <string>c3.8xlarge</string>
+                           <string>r3.large</string>
+                           <string>r3.xlarge</string>
+                           <string>r3.2xlarge</string>
+                           <string>r3.4xlarge</string>
+                           <string>r3.8xlarge</string>
+                           <string>i2.xlarge</string>
+                           <string>i2.2xlarge</string>
+                           <string>i2.4xlarge</string>
+                           <string>i2.8xlarge</string>
+                           <string>d2.xlarge</string>
+                           <string>d2.2xlarge</string>
+                           <string>d2.4xlarge</string>
+                           <string>d2.8xlarge</string>
+                           <string>g2.2xlarge</string>
+                           <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
+                        </enumValues>
+                        <value>t2.micro</value>
+                        <defaultValue>t2.micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>extra.disk.volatile</string>
+                     <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>instanceid</string>
+                     <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-demo.is.firewall</string>
+                     <parameter category="nuvlabox-demo" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-demo.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-albert-einstein.instance.type</string>
+                     <parameter category="nuvlabox-albert-einstein" description="Instance type" isSet="true" mandatory="true" name="nuvlabox-albert-einstein.instance.type" order="10" order_="10" readonly="false" type="Enum">
+                        <enumValues length="4">
+                           <string>micro</string>
+                           <string>small</string>
+                           <string>medium</string>
+                           <string>large</string>
+                        </enumValues>
+                        <value>micro</value>
+                        <defaultValue>micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr2.instance.type</string>
+                     <parameter category="cyclone-fr2" description="Instance type (flavor)" isSet="false" mandatory="true" name="cyclone-fr2.instance.type" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>ultimum-cz1.security.groups</string>
+                     <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>ec2-ap-northeast-1.security.groups</string>
+                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-demo.cpu</string>
+                     <parameter category="nuvlabox-demo" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-demo.cpu" order="20" order_="20" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-max-planck.is.firewall</string>
+                     <parameter category="nuvlabox-max-planck" description="If this flag is set, the instance will be started on the internal network and on the natted network so it can act as a firewall for instances on the internal network." isSet="true" mandatory="true" name="nuvlabox-max-planck.is.firewall" order="10" order_="10" readonly="false" type="Boolean">
+                        <value>false</value>
+                        <defaultValue>false</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.ram</string>
+                     <parameter category="cyclone-fr1" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="cyclone-fr1.ram" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr2.security.groups</string>
+                     <parameter category="cyclone-fr2" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="cyclone-fr2.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>ec2-ap-southeast-2.instance.type</string>
+                     <parameter category="ec2-ap-southeast-2" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-ap-southeast-2.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="42">
+                           <string>t2.micro</string>
+                           <string>t2.small</string>
+                           <string>t2.medium</string>
+                           <string>m3.medium</string>
+                           <string>m3.large</string>
+                           <string>m3.xlarge</string>
+                           <string>m3.2xlarge</string>
+                           <string>c4.large</string>
+                           <string>c4.xlarge</string>
+                           <string>c4.2xlarge</string>
+                           <string>c4.4xlarge</string>
+                           <string>c4.8xlarge</string>
+                           <string>c3.large</string>
+                           <string>c3.xlarge</string>
+                           <string>c3.2xlarge</string>
+                           <string>c3.4xlarge</string>
+                           <string>c3.8xlarge</string>
+                           <string>r3.large</string>
+                           <string>r3.xlarge</string>
+                           <string>r3.2xlarge</string>
+                           <string>r3.4xlarge</string>
+                           <string>r3.8xlarge</string>
+                           <string>i2.xlarge</string>
+                           <string>i2.2xlarge</string>
+                           <string>i2.4xlarge</string>
+                           <string>i2.8xlarge</string>
+                           <string>d2.xlarge</string>
+                           <string>d2.2xlarge</string>
+                           <string>d2.4xlarge</string>
+                           <string>d2.8xlarge</string>
+                           <string>g2.2xlarge</string>
+                           <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
+                        </enumValues>
+                        <value>t2.micro</value>
+                        <defaultValue>t2.micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyfronet-pl1.security.groups</string>
+                     <parameter category="cyfronet-pl1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="cyfronet-pl1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>network</string>
+                     <parameter category="Cloud" description="Network type" isSet="true" mandatory="true" name="network" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="2">
+                           <string>Public</string>
+                           <string>Private</string>
+                        </enumValues>
+                        <value>Public</value>
+                        <defaultValue>Public</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>ec2-ap-southeast-1.security.groups</string>
+                     <parameter category="ec2-ap-southeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-southeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>azure-west-europe.instance.type</string>
+                     <parameter category="azure-west-europe" description="Machine size" isSet="true" mandatory="true" name="azure-west-europe.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="25">
+                           <string>Basic_A0</string>
+                           <string>Basic_A1</string>
+                           <string>Basic_A2</string>
+                           <string>Basic_A3</string>
+                           <string>Basic_A4</string>
+                           <string>ExtraSmall</string>
+                           <string>Small</string>
+                           <string>Medium</string>
+                           <string>Large</string>
+                           <string>ExtraLarge</string>
+                           <string>A5</string>
+                           <string>A6</string>
+                           <string>A7</string>
+                           <string>A8</string>
+                           <string>A9</string>
+                           <string>A10</string>
+                           <string>A11</string>
+                           <string>Standard_D1</string>
+                           <string>Standard_D2</string>
+                           <string>Standard_D3</string>
+                           <string>Standard_D4</string>
+                           <string>Standard_D11</string>
+                           <string>Standard_D12</string>
+                           <string>Standard_D13</string>
+                           <string>Standard_D14</string>
+                        </enumValues>
+                        <value>Basic_A0</value>
+                        <defaultValue>Basic_A0</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>ec2-us-east-1.instance.type</string>
+                     <parameter category="ec2-us-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-us-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="42">
+                           <string>t2.micro</string>
+                           <string>t2.small</string>
+                           <string>t2.medium</string>
+                           <string>m3.medium</string>
+                           <string>m3.large</string>
+                           <string>m3.xlarge</string>
+                           <string>m3.2xlarge</string>
+                           <string>c4.large</string>
+                           <string>c4.xlarge</string>
+                           <string>c4.2xlarge</string>
+                           <string>c4.4xlarge</string>
+                           <string>c4.8xlarge</string>
+                           <string>c3.large</string>
+                           <string>c3.xlarge</string>
+                           <string>c3.2xlarge</string>
+                           <string>c3.4xlarge</string>
+                           <string>c3.8xlarge</string>
+                           <string>r3.large</string>
+                           <string>r3.xlarge</string>
+                           <string>r3.2xlarge</string>
+                           <string>r3.4xlarge</string>
+                           <string>r3.8xlarge</string>
+                           <string>i2.xlarge</string>
+                           <string>i2.2xlarge</string>
+                           <string>i2.4xlarge</string>
+                           <string>i2.8xlarge</string>
+                           <string>d2.xlarge</string>
+                           <string>d2.2xlarge</string>
+                           <string>d2.4xlarge</string>
+                           <string>d2.8xlarge</string>
+                           <string>g2.2xlarge</string>
+                           <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
+                        </enumValues>
+                        <value>t2.micro</value>
+                        <defaultValue>t2.micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.cpu</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.cpu" order="20" order_="20" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>ec2-us-east-1.security.groups</string>
+                     <parameter category="ec2-us-east-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-us-east-1.security.groups" order="0" order_="0" readonly="false" type="String">
+                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
+                        <value>slipstream_managed</value>
+                        <defaultValue>slipstream_managed</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>cyclone-fr1.cpu</string>
+                     <parameter category="cyclone-fr1" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="cyclone-fr1.cpu" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>replicaSetConf</string>
+                     <parameter category="Output" description="List of replica hostnames" isSet="false" mandatory="false" name="replicaSetConf" order="0" order_="0" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>nuvlabox-james-chadwick.ram</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-james-chadwick.ram" order="30" order_="30" readonly="false" type="String" />
+                  </entry>
+                  <entry>
+                     <string>ec2-eu-west.instance.type</string>
+                     <parameter category="ec2-eu-west" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-eu-west.instance.type" order="0" order_="0" readonly="false" type="Enum">
+                        <enumValues length="42">
+                           <string>t2.micro</string>
+                           <string>t2.small</string>
+                           <string>t2.medium</string>
+                           <string>m3.medium</string>
+                           <string>m3.large</string>
+                           <string>m3.xlarge</string>
+                           <string>m3.2xlarge</string>
+                           <string>c4.large</string>
+                           <string>c4.xlarge</string>
+                           <string>c4.2xlarge</string>
+                           <string>c4.4xlarge</string>
+                           <string>c4.8xlarge</string>
+                           <string>c3.large</string>
+                           <string>c3.xlarge</string>
+                           <string>c3.2xlarge</string>
+                           <string>c3.4xlarge</string>
+                           <string>c3.8xlarge</string>
+                           <string>r3.large</string>
+                           <string>r3.xlarge</string>
+                           <string>r3.2xlarge</string>
+                           <string>r3.4xlarge</string>
+                           <string>r3.8xlarge</string>
+                           <string>i2.xlarge</string>
+                           <string>i2.2xlarge</string>
+                           <string>i2.4xlarge</string>
+                           <string>i2.8xlarge</string>
+                           <string>d2.xlarge</string>
+                           <string>d2.2xlarge</string>
+                           <string>d2.4xlarge</string>
+                           <string>d2.8xlarge</string>
+                           <string>g2.2xlarge</string>
+                           <string>g2.8xlarge</string>
+                           <string>t1.micro</string>
+                           <string>m1.small</string>
+                           <string>m1.large</string>
+                           <string>m1.xlarge</string>
+                           <string>c1.medium</string>
+                           <string>c1.xlarge</string>
+                           <string>m2.xlarge</string>
+                           <string>m2.2xlarge</string>
+                           <string>m2.4xlarge</string>
+                           <string>cc1.4xlarge</string>
+                        </enumValues>
+                        <value>t2.micro</value>
+                        <defaultValue>t2.micro</defaultValue>
+                     </parameter>
+                  </entry>
+                  <entry>
+                     <string>softlayer-it-mil01.instance.type</string>
+                     <parameter category="softlayer-it-mil01" description="Instance type (flavor)" isSet="true" mandatory="true" name="softlayer-it-mil01.instance.type" order="0" order_="0" readonly="false" type="String">
+                        <value>2 CPU, 2GB ram, 100GB</value>
+                        <defaultValue>2 CPU, 2GB ram, 100GB</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -778,54 +1008,10 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>ec2-sa-east-1.instance.type</string>
-                     <parameter category="ec2-sa-east-1" description="Cloud instance type" isSet="true" mandatory="true" name="ec2-sa-east-1.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="42">
-                           <string>t2.micro</string>
-                           <string>t2.small</string>
-                           <string>t2.medium</string>
-                           <string>m3.medium</string>
-                           <string>m3.large</string>
-                           <string>m3.xlarge</string>
-                           <string>m3.2xlarge</string>
-                           <string>c4.large</string>
-                           <string>c4.xlarge</string>
-                           <string>c4.2xlarge</string>
-                           <string>c4.4xlarge</string>
-                           <string>c4.8xlarge</string>
-                           <string>c3.large</string>
-                           <string>c3.xlarge</string>
-                           <string>c3.2xlarge</string>
-                           <string>c3.4xlarge</string>
-                           <string>c3.8xlarge</string>
-                           <string>r3.large</string>
-                           <string>r3.xlarge</string>
-                           <string>r3.2xlarge</string>
-                           <string>r3.4xlarge</string>
-                           <string>r3.8xlarge</string>
-                           <string>i2.xlarge</string>
-                           <string>i2.2xlarge</string>
-                           <string>i2.4xlarge</string>
-                           <string>i2.8xlarge</string>
-                           <string>d2.xlarge</string>
-                           <string>d2.2xlarge</string>
-                           <string>d2.4xlarge</string>
-                           <string>d2.8xlarge</string>
-                           <string>g2.2xlarge</string>
-                           <string>g2.8xlarge</string>
-                           <string>t1.micro</string>
-                           <string>m1.small</string>
-                           <string>m1.large</string>
-                           <string>m1.xlarge</string>
-                           <string>c1.medium</string>
-                           <string>c1.xlarge</string>
-                           <string>m2.xlarge</string>
-                           <string>m2.2xlarge</string>
-                           <string>m2.4xlarge</string>
-                           <string>cc1.4xlarge</string>
-                        </enumValues>
-                        <value>t2.micro</value>
-                        <defaultValue>t2.micro</defaultValue>
+                     <string>cyfronet-pl1.instance.type</string>
+                     <parameter category="cyfronet-pl1" description="Instance type (flavor)" isSet="true" mandatory="true" name="cyfronet-pl1.instance.type" order="0" order_="0" readonly="false" type="String">
+                        <value>CPU-1.RAM-512MB.DISK-10GB</value>
+                        <defaultValue>CPU-1.RAM-512MB.DISK-10GB</defaultValue>
                      </parameter>
                   </entry>
                   <entry>
@@ -837,8 +1023,17 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>extra.disk.volatile</string>
-                     <parameter category="Cloud" description="Volatile extra disk in GB" isSet="false" mandatory="true" name="extra.disk.volatile" order="0" order_="0" readonly="false" type="String" />
+                     <string>nuvlabox-max-planck.instance.type</string>
+                     <parameter category="nuvlabox-max-planck" description="Instance type" isSet="true" mandatory="true" name="nuvlabox-max-planck.instance.type" order="10" order_="10" readonly="false" type="Enum">
+                        <enumValues length="4">
+                           <string>micro</string>
+                           <string>small</string>
+                           <string>medium</string>
+                           <string>large</string>
+                        </enumValues>
+                        <value>micro</value>
+                        <defaultValue>micro</defaultValue>
+                     </parameter>
                   </entry>
                   <entry>
                      <string>nuvlabox-james-chadwick.disks.bus.type</string>
@@ -856,10 +1051,6 @@ service mongodb stop || true</recipe>
                      <parameter category="Output" description="MongoDB replica set ready?" isSet="false" mandatory="false" name="isReplicaSetReady" order="0" order_="0" readonly="false" type="String" />
                   </entry>
                   <entry>
-                     <string>instanceid</string>
-                     <parameter category="Output" description="Cloud instance id" isSet="false" mandatory="true" name="instanceid" order="0" order_="0" readonly="false" type="String" />
-                  </entry>
-                  <entry>
                      <string>ec2-eu-central-1.security.groups</string>
                      <parameter category="ec2-eu-central-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-eu-central-1.security.groups" order="0" order_="0" readonly="false" type="String">
                         <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
@@ -868,16 +1059,17 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
+                     <string>nuvlabox-max-planck.cpu</string>
+                     <parameter category="nuvlabox-max-planck" description="Number of CPUs (i.e. virtual cores)" isSet="false" mandatory="true" name="nuvlabox-max-planck.cpu" order="20" order_="20" readonly="false" type="String" />
+                  </entry>
+                  <entry>
                      <string>nuvlabox-james-chadwick.instance.type</string>
-                     <parameter category="nuvlabox-james-chadwick" description="Cloud instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="0" order_="0" readonly="false" type="Enum">
-                        <enumValues length="7">
-                           <string>m1.small</string>
-                           <string>c1.medium</string>
-                           <string>m1.large</string>
-                           <string>m1.xlarge</string>
-                           <string>c1.xlarge</string>
-                           <string>t1.micro</string>
-                           <string>standard.xsmall</string>
+                     <parameter category="nuvlabox-james-chadwick" description="Instance type" isSet="true" mandatory="true" name="nuvlabox-james-chadwick.instance.type" order="10" order_="10" readonly="false" type="Enum">
+                        <enumValues length="4">
+                           <string>micro</string>
+                           <string>small</string>
+                           <string>medium</string>
+                           <string>large</string>
                         </enumValues>
                         <value>m1.small</value>
                         <defaultValue>m1.small</defaultValue>
@@ -943,20 +1135,8 @@ service mongodb stop || true</recipe>
                      </parameter>
                   </entry>
                   <entry>
-                     <string>ultimum-cz1.security.groups</string>
-                     <parameter category="ultimum-cz1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ultimum-cz1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
-                        <value>slipstream_managed</value>
-                        <defaultValue>slipstream_managed</defaultValue>
-                     </parameter>
-                  </entry>
-                  <entry>
-                     <string>ec2-ap-northeast-1.security.groups</string>
-                     <parameter category="ec2-ap-northeast-1" description="Security Groups (comma separated list)" isSet="true" mandatory="true" name="ec2-ap-northeast-1.security.groups" order="0" order_="0" readonly="false" type="String">
-                        <instructions>If you don't know what is a security group or if you don't want to take care of them, you can use the special value &lt;code&gt;slipstream_managed&lt;/code&gt; to let SlipStream generate a security group with everything allowed.</instructions>
-                        <value>slipstream_managed</value>
-                        <defaultValue>slipstream_managed</defaultValue>
-                     </parameter>
+                     <string>nuvlabox-max-planck.ram</string>
+                     <parameter category="nuvlabox-max-planck" description="Amount of RAM, in GB" isSet="false" mandatory="true" name="nuvlabox-max-planck.ram" order="30" order_="30" readonly="false" type="String" />
                   </entry>
                   <entry>
                      <string>ec2-us-west-2.instance.type</string>
@@ -1012,6 +1192,7 @@ service mongodb stop || true</recipe>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>

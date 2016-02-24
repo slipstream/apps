@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-02-24 14:45:44.921 UTC" deleted="false" description="Install and configure an OpenERP instance backed with postgres" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:09:29.646 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/openerp.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/OpenERP" platform="ubuntu" shortName="openerp" version="2131">
+<imageModule category="Image" creation="2014-02-24 14:45:44.921 UTC" deleted="false" description="Install and configure an OpenERP instance backed with postgres" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:09:29.646 UTC" loginUser="ubuntu" logoLink="https://nuv.la/images/modules-logos/openerp.svg" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/OpenERP" platform="ubuntu" shortName="openerp" version="2131">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,10 +7,12 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-11-20 12:09:29.646 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report" />
+      <target name="onvmadd" />
       <target name="onvmremove" />
       <target name="execute">#!/usr/bin/env bash
 # WARNING:
@@ -29,8 +31,6 @@ ss-set url.service ${url}
 ss-display "OpenERP ready!"
 
 </target>
-      <target name="onvmadd" />
-      <target name="report" />
    </targets>
    <packages>
       <package name="puppet-common" />

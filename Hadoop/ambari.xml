@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:51.387 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="2136">
+<imageModule category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:51.387 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="2136">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,383 +6,10 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
-      <target name="onvmadd">#!/bin/bash
-set -e
-
-
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
-
-
-    ss-display "Haddop: adding slave"
-    cluster_name=`ss-get HDP_Cluster_Name`
-    master_hostname=`ss-get  master.1:node_hostname`
-
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-
-
-
-        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
-        slave_state=$(ss-get $INSTANCE_NAME:node_state)
-
-
-
-        while [ "$slave_state" != 'ambari_agent_ready' ]
-        do
-            ss-display "Wait new salve ..."
-            slave_state=$(ss-get $INSTANCE_NAME:node_state)
-            
-        done
-
-
-
-        ss-display "Add new salve ..."
-        #Add the host to the cluster.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
-
-
-
-        ss-display "Add host components"
-        # Add the necessary host components to the host.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        sleep 5
-
-
-
-        ss-display "Install host components"
-        #Install the components
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 390
-
-
-
-        ss-display "Start host components"
-        #Start the components.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 100
-
-
-
-        #Restart Ganglia_Server (Ganglia:  metrics)
-
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Ganglia Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"GANGLIA",
-         "component_name":"GANGLIA_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-          #Restart NameNode (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Secondary NameNode  (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Secondary NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"SECONDARY_NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-        #Restart Resource_Manager (YARN)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Resource Manager",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"YARN",
-         "component_name":"RESOURCEMANAGER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Zookeeper Server (Zookeeper: coordinator)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Zookeeper Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"ZOOKEEPER",
-         "component_name":"ZOOKEEPER_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-    done
-
-
-
-fi
-
-
-
-ss-display "${cluster_name} Ready"
-</target>
-      <target name="onvmremove">#!/bin/bash
-set -e
-
-
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
-
-
-
-    ss-display "Removing slave ..."
-    cluster_name=`ss-get HDP_Cluster_Name`
-    master_hostname=`ss-get  master.1:node_hostname`
-
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-
-        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
-
-
-
-        ss-display "Stop slave components"
-        #STOP all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 120
-
-
-
-        ss-display "Delete slave components"
-        #DELETE all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-       sleep 20
-
-
-
-        ss-display "Delete the slave"
-        #DELETE the host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
-        sleep 5
-
-
-
-        #Restart Ganglia_Server (Ganglia:  metrics)
-
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Ganglia Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"GANGLIA",
-         "component_name":"GANGLIA_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-          #Restart NameNode (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Secondary NameNode  (HDFS)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Secondary NameNode",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"HDFS",
-         "component_name":"SECONDARY_NAMENODE",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-        #Restart Resource_Manager (YARN)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Resource Manager",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"YARN",
-         "component_name":"RESOURCEMANAGER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-
-     #Restart Zookeeper Server (Zookeeper: coordinator)
-        
-        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
-{
-   "RequestInfo":{
-      "command":"RESTART",
-      "context":"Restart Zookeeper Server",
-      "operation_level":{
-         "level":"HOST",
-         "cluster_name":"'$cluster_name'"
-      }
-   },
-   "Requests/resource_filters":[
-      {
-         "service_name":"ZOOKEEPER",
-         "component_name":"ZOOKEEPER_SERVER",
-         "hosts":"'$master_hostname'"
-      }
-   ]
-}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
-
-
-    done
-
-
-fi
-
-
-ss-display "${cluster_name} Ready"
-</target>
       <target name="execute">#!/bin/sh -x
 
 
@@ -901,6 +528,379 @@ ss-set url.service ${url}
 
 ss-set statecustom "${cluster_name} Ready"</target>
       <target name="report" />
+      <target name="onvmremove">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+
+    ss-display "Removing slave ..."
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+
+
+
+        ss-display "Stop slave components"
+        #STOP all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 120
+
+
+
+        ss-display "Delete slave components"
+        #DELETE all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+       sleep 20
+
+
+
+        ss-display "Delete the slave"
+        #DELETE the host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+        sleep 5
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+    done
+
+
+fi
+
+
+ss-display "${cluster_name} Ready"
+</target>
+      <target name="onvmadd">#!/bin/bash
+set -e
+
+
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
+
+
+    ss-display "Haddop: adding slave"
+    cluster_name=`ss-get HDP_Cluster_Name`
+    master_hostname=`ss-get  master.1:node_hostname`
+
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+
+
+
+        slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+        slave_state=$(ss-get $INSTANCE_NAME:node_state)
+
+
+
+        while [ "$slave_state" != 'ambari_agent_ready' ]
+        do
+            ss-display "Wait new salve ..."
+            slave_state=$(ss-get $INSTANCE_NAME:node_state)
+            
+        done
+
+
+
+        ss-display "Add new salve ..."
+        #Add the host to the cluster.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+
+
+
+        ss-display "Add host components"
+        # Add the necessary host components to the host.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        sleep 5
+
+
+
+        ss-display "Install host components"
+        #Install the components
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 390
+
+
+
+        ss-display "Start host components"
+        #Start the components.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 100
+
+
+
+        #Restart Ganglia_Server (Ganglia:  metrics)
+
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Ganglia Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"GANGLIA",
+         "component_name":"GANGLIA_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+          #Restart NameNode (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Secondary NameNode  (HDFS)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Secondary NameNode",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"HDFS",
+         "component_name":"SECONDARY_NAMENODE",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+        #Restart Resource_Manager (YARN)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Resource Manager",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"YARN",
+         "component_name":"RESOURCEMANAGER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+     #Restart Zookeeper Server (Zookeeper: coordinator)
+        
+        curl -H 'X-Requested-By: ambari' -u admin:admin  -X POST -d '
+{
+   "RequestInfo":{
+      "command":"RESTART",
+      "context":"Restart Zookeeper Server",
+      "operation_level":{
+         "level":"HOST",
+         "cluster_name":"'$cluster_name'"
+      }
+   },
+   "Requests/resource_filters":[
+      {
+         "service_name":"ZOOKEEPER",
+         "component_name":"ZOOKEEPER_SERVER",
+         "hosts":"'$master_hostname'"
+      }
+   ]
+}' http://localhost:8080/api/v1/clusters/$cluster_name/requests
+
+
+
+    done
+
+
+
+fi
+
+
+
+ss-display "${cluster_name} Ready"
+</target>
    </targets>
    <packages />
    <prerecipe />

@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-07-01 15:24:53.531 UTC" deleted="false" description="Deployment of an Hadoop cluster" isLatestVersion="true" lastModified="2015-07-02 08:26:30.263 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" parentUri="module/apps/Hadoop" shortName="hadoop-deployment" version="1717">
+<deploymentModule category="Deployment" creation="2015-07-01 15:24:53.531 UTC" deleted="false" description="Deployment of an Hadoop cluster" isLatestVersion="true" lastModified="2015-07-02 08:26:30.263 UTC" logoLink="https://nuv.la/images/modules-logos/hadoop.svg" parentUri="module/apps/Hadoop" shortName="hadoop-deployment" version="1717">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,17 +7,17 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-02 08:26:30.263 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
+   <targets />
    <nodes>
       <entry>
          <string>slave</string>
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/slave" maxProvisioningFailures="0" multiplicity="1" name="slave" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
-            <image category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:48.580 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/slave" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="2135">
+            <image category="Image" creation="2015-06-04 11:41:58.644 UTC" deleted="false" description="Hadoop slave node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:48.580 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/slave" parentUri="module/apps/Hadoop" platform="centos" shortName="slave" version="2135">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -34,9 +34,8 @@
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmadd" />
-                  <target name="onvmremove" />
                   <target name="report" />
+                  <target name="onvmremove" />
                   <target name="execute">#!/bin/bash -x
 
 
@@ -261,6 +260,7 @@ ss-set url.ssh "${url_ssh}"
 
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Hadoop install ...'</target>
+                  <target name="onvmadd" />
                </targets>
                <packages />
                <prerecipe />
@@ -943,6 +943,7 @@ ss-set statecustom 'Hadoop install ...'</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -964,8 +965,7 @@ ss-set statecustom 'Hadoop install ...'</target>
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
-            <image category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:51.387 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/ambari" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="2136">
+            <image category="Image" creation="2015-06-04 11:24:04.836 UTC" deleted="false" description="Ambari server used to install and manage the Hadoop cluster" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:58:51.387 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/ambari.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/ambari" parentUri="module/apps/Hadoop" platform="centos" shortName="ambari" version="2136">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -982,7 +982,7 @@ ss-set statecustom 'Hadoop install ...'</target>
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmremove">#!/bin/bash
+                  <target name="onvmadd">#!/bin/bash
 set -e
 
 
@@ -990,8 +990,7 @@ set -e
 if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 
 
-
-    ss-display "Removing slave ..."
+    ss-display "Haddop: adding slave"
     cluster_name=`ss-get HDP_Cluster_Name`
     master_hostname=`ss-get  master.1:node_hostname`
 
@@ -999,38 +998,61 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 
     for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
 
+
+
         slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
+        slave_state=$(ss-get $INSTANCE_NAME:node_state)
 
 
 
-        ss-display "Stop slave components"
-        #STOP all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 120
+        while [ "$slave_state" != 'ambari_agent_ready' ]
+        do
+            ss-display "Wait new salve ..."
+            slave_state=$(ss-get $INSTANCE_NAME:node_state)
+            
+        done
 
 
 
-        ss-display "Delete slave components"
-        #DELETE all host components mapped to this host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-       sleep 20
+        ss-display "Add new salve ..."
+        #Add the host to the cluster.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
 
 
 
-        ss-display "Delete the slave"
-        #DELETE the host
-        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+        ss-display "Add host components"
+        # Add the necessary host components to the host.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
         sleep 5
+
+
+
+        ss-display "Install host components"
+        #Install the components
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 390
+
+
+
+        ss-display "Start host components"
+        #Start the components.
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 100
 
 
 
@@ -1148,10 +1170,13 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 }' http://localhost:8080/api/v1/clusters/$cluster_name/requests
 
 
+
     done
 
 
+
 fi
+
 
 
 ss-display "${cluster_name} Ready"
@@ -1674,7 +1699,7 @@ ss-set ss:url.service ${url}
 ss-set url.service ${url}
 
 ss-set statecustom "${cluster_name} Ready"</target>
-                  <target name="onvmadd">#!/bin/bash
+                  <target name="onvmremove">#!/bin/bash
 set -e
 
 
@@ -1682,7 +1707,8 @@ set -e
 if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 
 
-    ss-display "Haddop: adding slave"
+
+    ss-display "Removing slave ..."
     cluster_name=`ss-get HDP_Cluster_Name`
     master_hostname=`ss-get  master.1:node_hostname`
 
@@ -1690,61 +1716,38 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 
     for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
 
-
-
         slave_hostname=$(ss-get $INSTANCE_NAME:node_hostname) 
-        slave_state=$(ss-get $INSTANCE_NAME:node_state)
 
 
 
-        while [ "$slave_state" != 'ambari_agent_ready' ]
-        do
-            ss-display "Wait new salve ..."
-            slave_state=$(ss-get $INSTANCE_NAME:node_state)
-            
-        done
+        ss-display "Stop slave components"
+        #STOP all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X PUT -d  '{"RequestInfo":{"context":"Stop NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+        sleep 120
 
 
 
-        ss-display "Add new salve ..."
-        #Add the host to the cluster.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
+        ss-display "Delete slave components"
+        #DELETE all host components mapped to this host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete DataNode"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete HDFS Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete YARN Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete MapReduce2 Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete Zookeeper Client"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  '{"RequestInfo":{"context":"Delete NodeManager"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
+       sleep 20
 
 
 
-        ss-display "Add host components"
-        # Add the necessary host components to the host.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add DATANODE"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add HDFS_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add NODEMANAGER"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add YARN_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add MAPREDUCE2_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X POST  '{"RequestInfo":{"context":"Add ZOOKEEPER_CLIENT"}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
+        ss-display "Delete the slave"
+        #DELETE the host
+        curl -H "X-Requested-By: ambari" -u admin:admin -X DELETE  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname
         sleep 5
-
-
-
-        ss-display "Install host components"
-        #Install the components
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install DataNode"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install HDFS Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install YARN Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install MapReduce2 Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install Zookeeper Client"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Install NodeManager"},"Body":{"HostRoles":{"state":"INSTALLED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 390
-
-
-
-        ss-display "Start host components"
-        #Start the components.
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start DataNode"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/DATANODE
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start HDFS Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/HDFS_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start YARN Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/YARN_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start MapReduce2 Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/MAPREDUCE2_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start Zookeeper Client"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_comp0onents/ZOOKEEPER_CLIENT
-        curl -H "X-Requested-By: ambari" --user  admin:admin -i -X PUT -d '{"RequestInfo":{"context":"Start NodeManager"},"Body":{"HostRoles":{"state":"STARTED"}}}'  http://localhost:8080/api/v1/clusters/$cluster_name/hosts/$slave_hostname/host_components/NODEMANAGER
-        sleep 100
 
 
 
@@ -1862,13 +1865,10 @@ if [ "$SLIPSTREAM_SCALING_NODE" == "slave" ]; then
 }' http://localhost:8080/api/v1/clusters/$cluster_name/requests
 
 
-
     done
 
 
-
 fi
-
 
 
 ss-display "${cluster_name} Ready"
@@ -2574,6 +2574,7 @@ ss-display "${cluster_name} Ready"
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -2581,8 +2582,7 @@ ss-display "${cluster_name} Ready"
          <node cloudService="default" creation="2015-07-01 15:24:53.532 UTC" deleted="false" imageUri="module/apps/Hadoop/master" maxProvisioningFailures="0" multiplicity="1" name="master" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
-            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:56:15.683 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="2134">
+            <image category="Image" creation="2015-06-04 11:35:34.195 UTC" deleted="false" description="Hadoop master node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 11:56:15.683 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/hadoop.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Hadoop/master" parentUri="module/apps/Hadoop" platform="centos" shortName="master" version="2134">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -2599,8 +2599,6 @@ ss-display "${cluster_name} Ready"
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="onvmremove" />
-                  <target name="onvmadd" />
                   <target name="execute">#!/bin/bash -x
 
 
@@ -2994,6 +2992,8 @@ ss-set url.ssh "${url_ssh}"
 # set the customstate to inform user that everything's ready
 ss-set statecustom 'Master node Ready!'</target>
                   <target name="report" />
+                  <target name="onvmadd" />
+                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -3680,6 +3680,7 @@ ss-set statecustom 'Master node Ready!'</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>

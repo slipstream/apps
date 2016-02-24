@@ -1,4 +1,4 @@
-<projectModule category="Project" creation="2015-07-01 11:20:12.644 UTC" deleted="false" description="Recipes to deploy a Docker Swarm manager with some Docker nodes" isLatestVersion="true" lastModified="2015-07-01 11:20:12.645 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker.svg" parentUri="module/apps" shortName="Docker" version="1695">
+<projectModule category="Project" creation="2015-07-01 11:20:12.644 UTC" deleted="false" description="Recipes to deploy a Docker Swarm manager with some Docker nodes" isLatestVersion="true" lastModified="2015-07-01 11:20:12.645 UTC" logoLink="https://nuv.la/images/modules-logos/docker.svg" parentUri="module/apps" shortName="Docker" version="1695">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="false" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -6,7 +6,7 @@
    <commit author="sixsq">
       <comment>Initial version of this module</comment>
    </commit>
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <children>

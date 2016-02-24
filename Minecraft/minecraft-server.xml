@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2014-02-11 11:16:43.979 UTC" deleted="false" description="A Minecraft server" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:08:25.202 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/minecraft.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Minecraft" platform="centos" shortName="minecraft-server" version="2133">
+<imageModule category="Image" creation="2014-02-11 11:16:43.979 UTC" deleted="false" description="A Minecraft server" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:08:25.202 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/minecraft.svg" moduleReferenceUri="module/examples/images/centos-6" parentUri="module/apps/Minecraft" platform="centos" shortName="minecraft-server" version="2133">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,10 +7,12 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-11-20 12:08:25.202 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
+      <target name="report" />
+      <target name="onvmremove" />
       <target name="execute">#!/usr/bin/env bash
 
 # Fail fast and fail hard.
@@ -58,8 +60,6 @@ ss-display "Minecraft server is ready to go!"
 
 </target>
       <target name="onvmadd" />
-      <target name="report" />
-      <target name="onvmremove" />
    </targets>
    <packages>
       <package name="puppet" />

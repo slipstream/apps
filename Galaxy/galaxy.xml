@@ -1,4 +1,4 @@
-<imageModule category="Image" creation="2015-06-04 10:29:19.226 UTC" deleted="false" description="Galaxy application" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:11:45.132 UTC" loginUser="ubuntu" logoLink="https://slipstream.sixsq.com/images/modules-logos/galaxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/Galaxy" platform="ubuntu" shortName="galaxy" version="2137">
+<imageModule category="Image" creation="2015-06-04 10:29:19.226 UTC" deleted="false" description="Galaxy application" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:11:45.132 UTC" loginUser="ubuntu" logoLink="https://nuv.la/images/modules-logos/galaxy.png" moduleReferenceUri="module/examples/images/ubuntu-12.04" parentUri="module/apps/Galaxy" platform="ubuntu" shortName="galaxy" version="2137">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,7 +7,7 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-11-20 12:11:45.132 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="0" limit="20" offset="0" totalCount="0" />
    <targets>
@@ -83,9 +83,9 @@ ss-set ss:url.service "http://${hname}/"
 #
 ss-set statecustom 'Galaxy Ready!'
 </target>
-      <target name="report" />
       <target name="onvmadd" />
       <target name="onvmremove" />
+      <target name="report" />
    </targets>
    <packages />
    <prerecipe />

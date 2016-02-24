@@ -1,4 +1,4 @@
-<deploymentModule category="Deployment" creation="2015-07-01 15:58:08.232 UTC" deleted="false" description="Deployment of Docker Swarm (manager &amp; nodes)" isLatestVersion="true" lastModified="2015-07-02 09:05:05.580 UTC" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker.svg" parentUri="module/apps/Docker" shortName="docker-swarm-deployment" version="1773">
+<deploymentModule category="Deployment" creation="2015-07-01 15:58:08.232 UTC" deleted="false" description="Deployment of Docker Swarm (manager &amp; nodes)" isLatestVersion="true" lastModified="2015-07-02 09:05:05.580 UTC" logoLink="https://nuv.la/images/modules-logos/docker.svg" parentUri="module/apps/Docker" shortName="docker-swarm-deployment" version="1773">
    <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="true" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="true" publicPut="false">
       <groupMembers>
          </groupMembers>
@@ -7,18 +7,18 @@
       <comment>Initial version of this module</comment>
    </commit>
    <published publicationDate="2015-07-02 09:05:05.580 UTC" />
-   <cloudNames length="15">
+   <cloudNames length="0">
       </cloudNames>
    <runs count="1" limit="20" offset="0" totalCount="1">
       </runs>
+   <targets />
    <nodes>
       <entry>
          <string>node</string>
          <node cloudService="default" creation="2015-07-02 09:04:26.322 UTC" deleted="false" imageUri="module/apps/Docker/docker-node" maxProvisioningFailures="0" multiplicity="1" name="node" network="Public">
             <parameterMappings />
             <parameters />
-            <notes length="0" />
-            <image category="Image" creation="2015-06-08 12:18:12.612 UTC" deleted="false" description="Docker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:17.995 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-node" parentUri="module/apps/Docker" platform="centos" shortName="docker-node" version="2139">
+            <image category="Image" creation="2015-06-08 12:18:12.612 UTC" deleted="false" description="Docker node" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:17.995 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/docker.svg" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-node" parentUri="module/apps/Docker" platform="centos" shortName="docker-node" version="2139">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -35,9 +35,8 @@
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
-                  <target name="report" />
-                  <target name="onvmremove" />
                   <target name="onvmadd" />
+                  <target name="report" />
                   <target name="execute">#!/bin/bash -x
 
 #
@@ -51,6 +50,7 @@ yum -y install docker-io
 # 
 docker -H tcp://0.0.0.0:2375 -d &amp;
 ss-display "Node Ready"</target>
+                  <target name="onvmremove" />
                </targets>
                <packages />
                <prerecipe />
@@ -721,6 +721,7 @@ ss-display "Node Ready"</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
       <entry>
@@ -742,8 +743,7 @@ ss-display "Node Ready"</target>
                   </parameter>
                </entry>
             </parameters>
-            <notes length="0" />
-            <image category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://slipstream.sixsq.com/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-swarm" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
+            <image category="Image" creation="2015-06-08 12:15:53.469 UTC" deleted="false" description="Swarm manager (master)" isBase="false" isLatestVersion="true" lastModified="2015-11-20 12:03:22.343 UTC" loginUser="root" logoLink="https://nuv.la/images/modules-logos/docker-swarm.png" moduleReferenceUri="module/examples/images/centos-6" name="apps/Docker/docker-swarm" parentUri="module/apps/Docker" platform="centos" shortName="docker-swarm" version="2140">
                <authz groupCreateChildren="false" groupDelete="false" groupGet="true" groupPost="false" groupPut="true" inheritedGroupMembers="true" owner="sixsq" ownerCreateChildren="true" ownerDelete="true" ownerGet="true" ownerPost="true" ownerPut="true" publicCreateChildren="false" publicDelete="false" publicGet="true" publicPost="false" publicPut="false">
                   <groupMembers>
                      <string>anis</string>
@@ -760,6 +760,43 @@ ss-display "Node Ready"</target>
                   <comment>Updated security group to slipstream_managed</comment>
                </commit>
                <targets>
+                  <target name="onvmadd">#!/bin/bash
+set -e
+
+#
+#Register the Swarm agents to the discovery service
+#
+ss-display "Docker: adding node"
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+    cluster_id=`ss-get --timeout 480 cluster_id`
+    
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
+    done
+
+fi
+
+ss-display "Docker Ready!"</target>
+                  <target name="onvmremove">#!/bin/bash
+set -e
+
+
+ss-display "Docker: removing node"
+
+if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
+
+
+    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
+        node_ip=$(ss-get $INSTANCE_NAME:hostname)
+        docker rmi -f $node_ip
+    done
+
+fi
+
+
+ss-display "Docker Ready!"</target>
                   <target name="execute">#!/bin/bash -x
 
 hostname docker_manager
@@ -864,44 +901,7 @@ ss-set ss:url.service "${url}"
 
 ss-display "Docker Ready"
 </target>
-                  <target name="onvmremove">#!/bin/bash
-set -e
-
-
-ss-display "Docker: removing node"
-
-if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
-
-
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-        node_ip=$(ss-get $INSTANCE_NAME:hostname)
-        docker rmi -f $node_ip
-    done
-
-fi
-
-
-ss-display "Docker Ready!"</target>
                   <target name="report" />
-                  <target name="onvmadd">#!/bin/bash
-set -e
-
-#
-#Register the Swarm agents to the discovery service
-#
-ss-display "Docker: adding node"
-if [ "$SLIPSTREAM_SCALING_NODE" == "node" ]; then
-
-    cluster_id=`ss-get --timeout 480 cluster_id`
-    
-    for INSTANCE_NAME in $SLIPSTREAM_SCALING_VMS; do
-        node_ip=$(ss-get $INSTANCE_NAME:hostname)
-        docker run -d swarm join --addr=$node_ip:2375 token://$cluster_id
-    done
-
-fi
-
-ss-display "Docker Ready!"</target>
                </targets>
                <packages />
                <prerecipe />
@@ -1580,6 +1580,7 @@ ss-display "Docker Ready!"</target>
                </parameters>
                <notes length="0" />
             </image>
+            <notes length="0" />
          </node>
       </entry>
    </nodes>
